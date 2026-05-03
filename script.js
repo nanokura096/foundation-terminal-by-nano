@@ -585,7 +585,7 @@ const files = [
   {
     'id': 'AP-519444',
     'name': '屋敷 輝',
-    'sex': 'Female',
+    'sex': 'Male',
     'age': '20',
     'division': 'I don’t know by Kaso',
     'rank': 'Nothing?',
