@@ -18,6 +18,8 @@ body{
   overflow-x:hidden;
 }
 
+/* ---------------- FULL SCREEN LAYERS ---------------- */
+
 #loginScreen,
 #amnesticOverlay,
 #emergencyOverlay,
@@ -27,14 +29,18 @@ body{
   inset:0;
 }
 
+/* ---------------- LOGIN ---------------- */
+
 #loginScreen{
   z-index:9999;
   display:flex;
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  background:black;
+  background:#000;
 }
+
+/* ---------------- BOOT ---------------- */
 
 #bootScreen{
   z-index:9000;
@@ -44,7 +50,7 @@ body{
   line-height:1.6;
   white-space:pre-wrap;
   overflow-y:auto;
-  background:black;
+  background:#000;
 }
 
 #bootScreen div{
@@ -53,6 +59,8 @@ body{
   padding-left:8px;
 }
 
+/* ---------------- OVERLAYS BASE ---------------- */
+
 #amnesticOverlay,
 #emergencyOverlay,
 #warningPopup{
@@ -60,8 +68,19 @@ body{
   justify-content:center;
   align-items:center;
   flex-direction:column;
+
+  /* 重要：デフォは完全遮断 */
   pointer-events:none;
 }
+
+/* active時だけ操作可能 */
+#amnesticOverlay.active,
+#emergencyOverlay.active,
+#warningPopup.active{
+  pointer-events:auto !important;
+}
+
+/* ---------------- AMNESTIC ---------------- */
 
 #amnesticOverlay{
   z-index:10000;
@@ -70,10 +89,28 @@ body{
   text-align:center;
 }
 
+/* ---------------- EMERGENCY ---------------- */
+
 #emergencyOverlay{
   z-index:20000;
-  background:rgba(255,0,0,0.8);
+  background:rgba(255,0,0,0.85);
+
+  /* ここが超重要：クリック透過事故防止 */
+  pointer-events:none;
 }
+
+#emergencyOverlay.active{
+  pointer-events:auto !important;
+}
+
+#emergencyContent{
+  background:#000;
+  padding:25px;
+  border:2px solid red;
+  width:85%;
+}
+
+/* ---------------- WARNING POPUP ---------------- */
 
 #warningPopup{
   z-index:30000;
@@ -90,18 +127,7 @@ body{
   box-shadow:0 0 20px red;
 }
 
-#amnesticOverlay.active,
-#emergencyOverlay.active,
-#warningPopup.active{
-  pointer-events:auto;
-}
-
-#emergencyContent{
-  background:#000;
-  padding:25px;
-  border:2px solid red;
-  width:85%;
-}
+/* ---------------- TERMINAL ---------------- */
 
 #mainTerminal{
   display:none;
@@ -120,6 +146,8 @@ body{
   font-size:12px;
   opacity:.8;
 }
+
+/* ---------------- INPUTS ---------------- */
 
 input,
 select,
@@ -140,6 +168,8 @@ button:active,
   transform:scale(.98);
 }
 
+/* ---------------- HEADER ---------------- */
+
 #logo{
   font-size:20px;
   border-bottom:1px solid var(--green);
@@ -151,6 +181,8 @@ button:active,
   font-size:12px;
   margin-bottom:15px;
 }
+
+/* ---------------- TABS ---------------- */
 
 #tabs{
   display:none;
@@ -164,6 +196,8 @@ button:active,
   min-width:80px;
 }
 
+/* ---------------- RESULT ---------------- */
+
 #result{
   border:1px solid var(--green);
   min-height:220px;
@@ -173,6 +207,8 @@ button:active,
   white-space:pre-wrap;
   background:rgba(0,20,0,.4);
 }
+
+/* ---------------- STAFF LIST ---------------- */
 
 #staffListTitle{
   margin-top:20px;
@@ -193,6 +229,8 @@ button:active,
   cursor:pointer;
 }
 
+/* ---------------- BOTTOM ---------------- */
+
 .bottom-controls{
   margin-top:30px;
   text-align:center;
@@ -204,6 +242,8 @@ button:active,
   border-color:red;
   color:red;
 }
+
+/* ---------------- ANIMATION ---------------- */
 
 .blink{
   animation:blink 1s infinite;
