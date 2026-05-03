@@ -635,11 +635,12 @@ const files = [
 
 // --- グローバル変数 ---
 // --- グローバル変数 ---
+// --- グローバル変数 ---
 let currentFile = null;
 let audioCtx = null;
 let loginAttempts = 0; // 失敗カウント用
 
-// --- 認証設定 ---
+// --- 認証設定 (ここを書き換えました) ---
 const AUTH_CONFIG = {
     userId: "admin",
     passKey: "226227"
@@ -695,6 +696,54 @@ function buzzer(t = 900) {
     gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t / 1000);
     osc.start(); osc.stop(audioCtx.currentTime + t / 1000);
+}
+
+// --- プロトコル演出 (記憶処理) ---
+function executeAmnesticProtocol() {
+    UI.amnesticOverlay.style.display = 'flex';
+    UI.amnesticOverlay.classList.add('active');
+    
+    // 警告音の連打
+    buzzer(2000);
+    setTimeout(() => buzzer(1500), 1000);
+    setTimeout(() => buzzer(1500), 2500);
+
+    // 5秒後に初期状態へリロード
+    setTimeout(() => {
+        location.reload();
+    }, 5000);
+}
+
+// --- 画面遷移演出 (ブート) ---
+function runBootSequence() {
+    UI.loginScreen.style.display = 'none';
+    UI.bootScreen.style.display = 'block';
+    UI.bootScreen.innerHTML = '';
+
+    const lines = [
+        "INITIALIZING SITE-256 SECURE NETWORK...",
+        "LOADING MEMETIC KILL AGENT PROTECTION...",
+        "CONNECTING TO GLOBAL DATABASE...",
+        "BYPASSING REGIONAL FIREWALL...",
+        "AUTHENTICATION SUCCESSFUL.",
+        "WELCOME, AUTHORIZED PERSONNEL."
+    ];
+
+    lines.forEach((l, i) => {
+        setTimeout(() => {
+            const d = document.createElement('div');
+            d.textContent = `> ${l}`;
+            UI.bootScreen.appendChild(d);
+            UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
+            beep(400 + (i * 100), 20);
+        }, i * 400);
+    });
+
+    setTimeout(() => {
+        UI.bootScreen.style.display = 'none';
+        UI.mainTerminal.style.display = 'block';
+        document.getElementById('statusbar').textContent = `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
+    }, 2800);
 }
 
 // --- 検索・表示ロジック ---
@@ -759,52 +808,6 @@ function showTab(tabName) {
     UI.result.innerHTML = content;
 }
 
-// --- プロトコル演出 ---
-function executeAmnesticProtocol() {
-    UI.amnesticOverlay.style.display = 'flex';
-    UI.amnesticOverlay.classList.add('active');
-    
-    // 警告音
-    buzzer(2000);
-    setTimeout(() => buzzer(1500), 1000);
-
-    // 5秒後に初期状態へ（リロード）
-    setTimeout(() => {
-        location.reload();
-    }, 5000);
-}
-
-function runBootSequence() {
-    UI.loginScreen.style.display = 'none';
-    UI.bootScreen.style.display = 'block';
-    UI.bootScreen.innerHTML = '';
-
-    const lines = [
-        "INITIALIZING SITE-256 SECURE NETWORK...",
-        "LOADING MEMETIC KILL AGENT PROTECTION...",
-        "CONNECTING TO GLOBAL DATABASE...",
-        "BYPASSING REGIONAL FIREWALL...",
-        "AUTHENTICATION SUCCESSFUL.",
-        "WELCOME, AUTHORIZED PERSONNEL."
-    ];
-
-    lines.forEach((l, i) => {
-        setTimeout(() => {
-            const d = document.createElement('div');
-            d.textContent = `> ${l}`;
-            UI.bootScreen.appendChild(d);
-            UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
-            beep(400 + (i * 100), 20);
-        }, i * 400);
-    });
-
-    setTimeout(() => {
-        UI.bootScreen.style.display = 'none';
-        UI.mainTerminal.style.display = 'block';
-        document.getElementById('statusbar').textContent = `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
-    }, 2800);
-}
-
 // --- 初期化 ---
 function init() {
     // リスト生成
@@ -820,7 +823,7 @@ function init() {
         UI.staffList.appendChild(div);
     });
 
-    // ログイン処理
+    // ログイン処理 (バリデーション & カウント)
     UI.loginBtn.onclick = () => {
         initAudio();
         const user = UI.usernameInput.value;
