@@ -637,187 +637,216 @@ const files = [
 let currentFile = null;
 let audioCtx = null;
 
+// --- 認証設定 (デモ用) ---
+const AUTH_CONFIG = {
+    userId: "ADMIN-256",
+    passKey: "SCP-FOUNDATION"
+};
+
 // --- DOM要素の取得 ---
 const UI = {
-  loginScreen: document.getElementById('loginScreen'),
-  loginBtn: document.getElementById('loginBtn'),
-  bootScreen: document.getElementById('bootScreen'),
-  mainTerminal: document.getElementById('mainTerminal'),
-  staffId: document.getElementById('staffId'),
-  clearance: document.getElementById('clearance'),
-  searchBtn: document.getElementById('searchBtn'),
-  result: document.getElementById('result'),
-  tabs: document.getElementById('tabs'),
-  staffList: document.getElementById('staffList'),
-  staffListTitle: document.getElementById('staffListTitle'),
-  emergencyBtn: document.getElementById('emergencyBtn'),
-  emergencyOverlay: document.getElementById('emergencyOverlay'),
-  emergencyMsg: document.getElementById('emergencyMsg')
+    loginScreen: document.getElementById('loginScreen'),
+    loginBtn: document.getElementById('loginBtn'),
+    usernameInput: document.getElementById('username'),
+    passwordInput: document.getElementById('password'),
+    loginError: document.getElementById('loginError'),
+    bootScreen: document.getElementById('bootScreen'),
+    mainTerminal: document.getElementById('mainTerminal'),
+    staffId: document.getElementById('staffId'),
+    clearance: document.getElementById('clearance'),
+    searchBtn: document.getElementById('searchBtn'),
+    result: document.getElementById('result'),
+    tabs: document.getElementById('tabs'),
+    staffList: document.getElementById('staffList'),
+    staffListTitle: document.getElementById('staffListTitle'),
+    emergencyBtn: document.getElementById('emergencyBtn'),
+    emergencyOverlay: document.getElementById('emergencyOverlay'),
+    emergencyMsg: document.getElementById('emergencyMsg')
 };
 
 // --- サウンドエンジン ---
 function initAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
 function beep(freq, duration, vol = 0.05) {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.frequency.value = freq;
-  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
-  osc.start(); osc.stop(audioCtx.currentTime + duration / 1000);
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
+    osc.start(); osc.stop(audioCtx.currentTime + duration / 1000);
 }
 
 function buzzer(t = 900) {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-  osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + t / 1000);
-  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t / 1000);
-  osc.start(); osc.stop(audioCtx.currentTime + t / 1000);
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + t / 1000);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t / 1000);
+    osc.start(); osc.stop(audioCtx.currentTime + t / 1000);
 }
 
-// --- ロジック: 検索・表示 ---
+// --- 検索・表示ロジック ---
 function searchFile() {
-  initAudio();
-  const id = UI.staffId.value.trim();
-  const userClearance = parseInt(UI.clearance.value);
-  const file = files.find(f => f.id === id);
+    initAudio();
+    const id = UI.staffId.value.trim();
+    const userClearance = parseInt(UI.clearance.value);
+    const file = files.find(f => f.id === id);
 
-  if (!file) {
-    UI.result.innerText = 'FILE NOT FOUND IN DATABASE.';
-    UI.tabs.style.display = 'none';
-    buzzer();
-    return;
-  }
+    if (!file) {
+        UI.result.innerText = 'ERROR: FILE NOT FOUND IN LOCAL DATABASE.';
+        UI.tabs.style.display = 'none';
+        buzzer(500);
+        return;
+    }
 
-  if (userClearance < parseInt(file.clearance)) {
-    UI.result.innerHTML = '<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL.</span>';
-    UI.tabs.style.display = 'none';
-    currentFile = null;
-    buzzer(1200);
-    return;
-  }
+    if (userClearance < parseInt(file.clearance)) {
+        UI.result.innerHTML = '<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL (REQUIRED: LV'+file.clearance+').\nTHIS INCIDENT HAS BEEN REPORTED.</span>';
+        UI.tabs.style.display = 'none';
+        currentFile = null;
+        buzzer(1200);
+        return;
+    }
 
-  currentFile = file;
-  UI.tabs.style.display = 'flex';
-  beep(880, 50);
-  showTab('personnel');
+    currentFile = file;
+    UI.tabs.style.display = 'flex';
+    beep(880, 50);
+    showTab('personnel');
 }
 
 function showTab(tabName) {
-  if (!currentFile) return;
-  const userClearance = parseInt(UI.clearance.value);
-  let content = '';
+    if (!currentFile) return;
+    const userClearance = parseInt(UI.clearance.value);
+    let content = '';
 
-  switch (tabName) {
-    case 'personnel':
-      const statusClass = `status-${currentFile.status.toLowerCase()}`;
-      content = `[PERSONAL DATA]\nID: ${currentFile.id}\nSEX: ${currentFile.sex}\nAGE: ${currentFile.age}\n\n`;
-      content += `────────────────────\n\n[FOUNDATION RECORD]\nNAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: <span class="${statusClass}">${currentFile.status}</span>\n\n`;
-      content += `────────────────────\n\n${currentFile.profile}`;
-      
-      const extra = currentFile.extraInfo || [];
-      const filtered = extra.filter(e => userClearance >= e.level);
-      if (filtered.length > 0) {
-        content += `\n\n────────────────────\n[ADDITIONAL DATA]\n`;
-        filtered.forEach(e => {
-          content += `\n[LV${e.level}] ${e.label}\n${e.value}\n`;
-        });
-      }
-      break;
-    case 'ability':
-      content = `[SUBJECT ABILITY PROFILE]\n\n${currentFile.ability}`;
-      break;
-    case 'artifact':
-      content = `[EQUIPMENT / SCP DESIGNATION]\n\nSCP: ${currentFile.weapon}\n\nDESCRIPTION:\n${currentFile.weaponinfo || 'NO DATA'}`;
-      break;
-    case 'record':
-      content = `[MISSION RECORD]\n\n${currentFile.record}\n\n────────────────────\n[ADMIN NOTE]\n\n${currentFile.note}`;
-      break;
-  }
-  UI.result.innerHTML = content;
+    switch (tabName) {
+        case 'personnel':
+            const statusClass = `status-${currentFile.status.toLowerCase()}`;
+            content = `[PERSONAL DATA]\nID: ${currentFile.id}\nSEX: ${currentFile.sex}\nAGE: ${currentFile.age}\n\n`;
+            content += `────────────────────\n\n[FOUNDATION RECORD]\nNAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: <span class="${statusClass}">${currentFile.status}</span>\n\n`;
+            content += `────────────────────\n\n${currentFile.profile}`;
+            
+            const extra = currentFile.extraInfo || [];
+            const filtered = extra.filter(e => userClearance >= e.level);
+            if (filtered.length > 0) {
+                content += `\n\n────────────────────\n[ADDITIONAL DATA]\n`;
+                filtered.forEach(e => {
+                    content += `\n[LV${e.level}] ${e.label}\n${e.value}\n`;
+                });
+            }
+            break;
+        case 'ability':
+            content = `[SUBJECT ABILITY PROFILE]\n\n${currentFile.ability}`;
+            break;
+        case 'artifact':
+            content = `[EQUIPMENT / SCP DESIGNATION]\n\nSCP: ${currentFile.weapon}\n\nDESCRIPTION:\n${currentFile.weaponinfo || 'NO DATA'}`;
+            break;
+        case 'record':
+            content = `[MISSION RECORD / ADMIN NOTES]\n\n${currentFile.record}\n\n────────────────────\n[OFFICIAL NOTE]\n\n${currentFile.note}`;
+            break;
+    }
+    UI.result.innerHTML = content;
 }
 
-// --- 初期化 & イベント ---
-function init() {
-  // 職員リスト生成
-  UI.staffList.innerHTML = '';
-  files.forEach(f => {
-    const div = document.createElement('div');
-    div.className = 'staffEntry';
-    div.innerText = `ID: ${f.id} / ${f.name}`;
-    div.onclick = () => {
-      UI.staffId.value = f.id;
-      searchFile();
-    };
-    UI.staffList.appendChild(div);
-  });
-
-  // ログイン処理
-  UI.loginBtn.onclick = () => {
-    initAudio();
-    beep(1000, 100);
+// --- 画面遷移演出 ---
+function runBootSequence() {
     UI.loginScreen.style.display = 'none';
     UI.bootScreen.style.display = 'block';
+    UI.bootScreen.innerHTML = ''; // クリア
 
     const lines = [
-      "AUTHENTICATING...",
-      "BYPASSING SITE-256 FIREWALL...",
-      "DECRYPTING PERSONNEL FILES...",
-      "ACCESS GRANTED. WELCOME TO SCP FOUNDATION NETWORK."
+        "INITIALIZING SITE-256 SECURE NETWORK...",
+        "LOADING MEMETIC KILL AGENT PROTECTION...",
+        "CONNECTING TO GLOBAL DATABASE...",
+        "BYPASSING REGIONAL FIREWALL...",
+        "AUTHENTICATION SUCCESSFUL.",
+        "WELCOME, AUTHORIZED PERSONNEL."
     ];
+
     lines.forEach((l, i) => {
-      setTimeout(() => {
-        const d = document.createElement('div');
-        d.textContent = `> ${l}`;
-        UI.bootScreen.appendChild(d);
-        UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
-      }, i * 500);
+        setTimeout(() => {
+            const d = document.createElement('div');
+            d.textContent = `> ${l}`;
+            UI.bootScreen.appendChild(d);
+            UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
+            beep(400 + (i * 100), 20);
+        }, i * 400);
     });
 
     setTimeout(() => {
-      UI.bootScreen.style.display = 'none';
-      UI.mainTerminal.style.display = 'block';
-      document.getElementById('statusbar').textContent = "SYSTEM STATUS: ONLINE | USER: AUTHORIZED";
-    }, 2500);
-  };
+        UI.bootScreen.style.display = 'none';
+        UI.mainTerminal.style.display = 'block';
+        document.getElementById('statusbar').textContent = `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
+    }, 2800);
+}
 
-  // 検索ボタン
-  UI.searchBtn.onclick = searchFile;
+// --- 初期化 & イベントリスナー ---
+function init() {
+    // 職員リストの自動生成
+    UI.staffList.innerHTML = '';
+    files.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'staffEntry';
+        div.innerText = `ID: ${f.id} / ${f.name}`;
+        div.onclick = () => {
+            UI.staffId.value = f.id;
+            searchFile();
+        };
+        UI.staffList.appendChild(div);
+    });
 
-  // タブボタン
-  document.querySelectorAll('#tabs button').forEach(btn => {
-    btn.onclick = () => {
-      beep(1200, 20);
-      showTab(btn.dataset.tab);
+    // ログイン処理 (バリデーション付き)
+    UI.loginBtn.onclick = () => {
+        initAudio();
+        const user = UI.usernameInput.value;
+        const pass = UI.passwordInput.value;
+
+        if (user === AUTH_CONFIG.userId && pass === AUTH_CONFIG.passKey) {
+            UI.loginError.textContent = "";
+            runBootSequence();
+        } else {
+            UI.loginError.style.color = "red";
+            UI.loginError.textContent = "INVALID CREDENTIALS. ACCESS ATTEMPT LOGGED.";
+            buzzer(1000);
+            // 失敗時に揺らすなどの演出も可
+            UI.loginBox.classList.add('blink');
+            setTimeout(() => UI.loginBox.classList.remove('blink'), 500);
+        }
     };
-  });
 
-  // リスト開閉
-  UI.staffListTitle.onclick = () => {
-    const isShow = UI.staffList.style.display === 'block';
-    UI.staffList.style.display = isShow ? 'none' : 'block';
-    UI.staffListTitle.textContent = isShow ? "▼ Show All Registered Personnel" : "▲ Hide Registered Personnel";
-  };
+    // 検索ボタン
+    UI.searchBtn.onclick = searchFile;
 
-  // 緊急ボタン
-  UI.emergencyBtn.onclick = () => {
-    buzzer(2000);
-    UI.emergencyOverlay.style.display = 'flex';
-    UI.emergencyOverlay.classList.add('active');
-    UI.emergencyMsg.innerHTML = "<h2 class='blink'>CONTAINMENT BREACH ALERT</h2><p>SITE-256 HAS BEEN PLACED UNDER QUARANTINE.</p>";
-  };
+    // タブ切り替え
+    document.querySelectorAll('#tabs button').forEach(btn => {
+        btn.onclick = () => {
+            beep(1200, 20);
+            showTab(btn.dataset.tab);
+        };
+    });
+
+    // 職員リスト開閉
+    UI.staffListTitle.onclick = () => {
+        const isShow = UI.staffList.style.display === 'block';
+        UI.staffList.style.display = isShow ? 'none' : 'block';
+        UI.staffListTitle.textContent = isShow ? "▼ Show All Registered Personnel" : "▲ Hide Registered Personnel";
+    };
+
+    // 緊急事態ボタン
+    UI.emergencyBtn.onclick = () => {
+        buzzer(2000);
+        UI.emergencyOverlay.style.display = 'flex';
+        UI.emergencyOverlay.classList.add('active');
+        UI.emergencyMsg.innerHTML = "<h2 class='blink' style='color:white;'>[ CRITICAL ALERT ]</h2><p>CONTAINMENT BREACH IN PROGRESS.</p><p>SITE-256 AUTOMATIC LOCKDOWN INITIATED.</p>";
+    };
 }
 
 window.onload = init;
-
-
