@@ -633,8 +633,7 @@ const files = [
   },
 ];
 
-
-// --- グローバル変数 ---// --- グローバル変数 ---
+// --- グローバル変数 ---
 let currentFile = null;
 let audioCtx = null;
 
@@ -820,3 +819,5 @@ function init() {
 }
 
 window.onload = init;
+
+
