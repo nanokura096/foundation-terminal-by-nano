@@ -1,64 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SCP FOUNDATION SECURE TERMINAL</title>
-  <style>
-:root{--green:#00FF41;--bg:#000;--red:#ff3131;--white:#d8d8d8;}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--green);font-family:Courier New,monospace;margin:0;padding:15px;overflow-x:hidden;}
-#loginScreen,#amnesticOverlay,#emergencyOverlay,#bootScreen{position:fixed;inset:0;}
-#loginScreen{z-index:9999;display:flex;justify-content:center;align-items:center;flex-direction:column;background:black;}
-#bootScreen{z-index:9000;display:none;padding:20px;font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-y:auto;background:black;}
-#bootScreen div{margin-bottom:10px;border-left:2px solid var(--green);padding-left:8px;}
-#amnesticOverlay,#emergencyOverlay{display:none;justify-content:center;align-items:center;flex-direction:column;pointer-events:none;}
-#amnesticOverlay{z-index:10000;background:#300;color:#fff;text-align:center;}
-#emergencyOverlay{z-index:20000;background:rgba(255,0,0,0.8);}
-#amnesticOverlay.active,#emergencyOverlay.active{pointer-events:auto;}
-#emergencyContent{background:#000;padding:25px;border:2px solid red;width:85%;}
-#mainTerminal{display:none;position:relative;z-index:5;}
-#loginBox{border:1px solid var(--green);padding:25px;width:min(340px,90vw);text-align:center;}
-input,select,button{width:100%;margin:6px 0;padding:12px;background:#000;color:var(--green);border:1px solid var(--green);font-family:inherit;font-size:16px;}
-#logo{font-size:20px;border-bottom:1px solid var(--green);padding-bottom:10px;margin-bottom:15px;}
-#statusbar{font-size:12px;margin-bottom:15px;}
-#tabs{display:none;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
-#tabs button{flex:1;min-width:80px;}
-#result{border:1px solid var(--green);min-height:220px;max-height:50vh;overflow-y:auto;padding:15px;white-space:pre-wrap;background:rgba(0,20,0,.4);}
-#staffListTitle{margin-top:20px;text-align:center;border-top:1px dashed var(--green);padding-top:15px;cursor:pointer;}
-#staffList{display:none;}
-.staffEntry{border:1px solid var(--green);padding:10px;margin-top:8px;cursor:pointer;}
-.bottom-controls{margin-top:30px;text-align:center;border-top:1px double var(--green);padding-top:20px;}
-.emergency-btn{border-color:red;color:red;}
-.blink{animation:blink 1s infinite;} @keyframes blink{50%{opacity:0;}}
-.warning{font-size:80px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCP FOUNDATION SECURE TERMINAL</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loginScreen"><div id="loginBox"><div>SECURITY AUTHENTICATION REQUIRED<br><span style="font-size:12px;opacity:.8;">SCP FOUNDATION DATABASE TERMINAL</span></div><input id="username" placeholder="[USER ID]"><input id="password" type="password" placeholder="[PASS KEY]"><button id="loginBtn">ACCESS DATABASE</button><div id="loginError"></div></div></div>
+
+<div id="loginScreen">
+  <div id="loginBox">
+    <div id="loginTitle">
+      SECURITY AUTHENTICATION REQUIRED<br>
+      <span>SCP FOUNDATION DATABASE TERMINAL</span>
+    </div>
+    <input id="username" placeholder="[USER ID]">
+    <input id="password" type="password" placeholder="[PASS KEY]">
+    <button id="loginBtn">ACCESS DATABASE</button>
+    <div id="loginError"></div>
+  </div>
+</div>
+
 <div id="bootScreen"></div>
-<div id="amnesticOverlay"><h1>[MEMETIC LOCKDOWN]</h1><p>UNAUTHORIZED ACCESS DETECTED.</p><div class="blink warning">⚠</div><p>ADMINISTERING CLASS-A AMNESTICS...</p></div>
-<div id="emergencyOverlay"><div id="emergencyContent"><div id="emergencyMsg"></div><div id="emergencyChoices"></div></div></div>
-<div id="mainTerminal"><div id="logo">SCP FOUNDATION SECURE TERMINAL / SITE-19</div><div id="statusbar"></div><div class="inputArea"><input id="staffId" placeholder="Enter Personnel ID or SCP ID"><select id="clearance"><option value="0">LV 0</option><option value="1">LV 1</option><option value="2">LV 2</option><option value="3" selected>LV 3</option><option value="4">LV 4</option><option value="5">LV 5</option></select><button id="searchBtn">SEARCH DATABASE</button></div><div id="tabs"><button data-tab="personnel">PERSONNEL</button><button data-tab="ability">PROFILE</button><button data-tab="artifact">SCP</button><button data-tab="record">RECORD</button></div><div id="result"></div><div id="staffListTitle">▼ Show All Registered Personnel</div><div id="staffList"></div><div class="bottom-controls"><button class="emergency-btn" id="emergencyBtn">REPORT CONTAINMENT BREACH</button></div></div>
-<script>
-const files=[{id:'AP-000000',name:'鳴瀬 可楚',division:'Foundation Personnel',rank:'Research Supervisor',status:'ACTIVE',clearance:'3',profile:'サイト-19所属職員。複数異常案件への対応経験を持つ。',ability:'[PERSONNEL PROFILE]\n戦闘・調査両面において高い適応能力を示す。\n精神汚染耐性試験にて良好な数値を記録。',weapon:'SCP-███',Description:'収容違反時にのみ使用を許可された異常装備。\n攻撃対象の行動結果を強制的に阻害する。',record:'複数機密記録はO5評議会承認が必要。',note:'現在も監視継続中。'}];
-let currentFile=null,loginAttempts=0,audioCtx=null,emergencyInterval=null;
-function initAudio(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}catch(e){}}
-function beep(f,d,v=0.05){if(!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;g.gain.setValueAtTime(v,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+d/1000);o.start();o.stop(audioCtx.currentTime+d/1000);}catch(e){}}
-function login(){initAudio();const u=username.value.trim(),p=password.value.trim();if(u==='admin'&&p==='226227'){loginBox.innerHTML='<div class="blink">AUTHENTICATING...</div>';setTimeout(()=>{loginScreen.style.display='none';startLoadingSequence();},1200);}else{loginAttempts++;loginError.innerText='ACCESS DENIED';beep(180,500,.2);if(loginAttempts>=3)initiateAmnestic();}}
-function initiateAmnestic(){amnesticOverlay.style.display='flex';amnesticOverlay.classList.add('active');setTimeout(()=>location.reload(),7000);}
-function startLoadingSequence(){bootScreen.style.display='block';bootScreen.innerHTML='';const lines=['> SCP FOUNDATION ENCRYPTED BOOT...','> VERIFYING SITE-19 NETWORK... [OK]','> DECRYPTING SECURE ARCHIVES...','> MEMETIC FILTER ENABLED...','> CLEARANCE LEVEL ACCEPTED...','> WELCOME, AUTHORIZED PERSONNEL.'];let i=0;function add(){if(i<lines.length){const d=document.createElement('div');d.innerText=lines[i];bootScreen.appendChild(d);d.scrollIntoView();beep(500+i*100,40,.03);i++;setTimeout(add,700);}else setTimeout(finishBoot,1000);}add();}
-function finishBoot(){bootScreen.style.display='none';mainTerminal.style.display='block';updateClock();setInterval(updateClock,1000);loadStaffList();}
-function updateClock(){statusbar.innerText='FOUNDATION ONLINE / SITE-19 / '+new Date().toLocaleString();}
-function searchFile(){const id=staffId.value.trim(),cl=parseInt(clearance.value),f=files.find(x=>x.id===id);if(!f||cl<parseInt(f.clearance)){result.innerText='ACCESS DENIED';beep(200,500,.2);return;}currentFile=f;tabs.style.display='flex';showTab('personnel');}
-function showTab(tab){if(!currentFile)return;let txt='';if(tab==='personnel')txt=`NAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: ${currentFile.status}\n\n${currentFile.profile}`;if(tab==='ability')txt=currentFile.ability;if(tab==='artifact')txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;if(tab==='record')txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;result.innerText=txt;}
-function loadStaffList(){staffList.innerHTML='';files.forEach(f=>{const d=document.createElement('div');d.className='staffEntry';d.innerText=`ID: ${f.id} / NAME: ${f.name}`;d.onclick=()=>{staffId.value=f.id;searchFile();};staffList.appendChild(d);});}
-function toggleStaffList(){staffList.style.display=staffList.style.display==='block'?'none':'block';}
-function triggerEmergency(){emergencyOverlay.style.display='flex';emergencyOverlay.classList.add('active');emergencyMsg.innerHTML='[ CONTAINMENT BREACH ]<br><br>Mobile Task Force has been dispatched.<br>Awaiting situation update.';emergencyChoices.innerHTML='';setTimeout(()=>{emergencyMsg.innerHTML='Containment restored?<br><br>';emergencyChoices.innerHTML='<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';},5000);}
-function forceYes(){noBtn.innerText='YES';noBtn.onclick=resolveEmergency;emergencyMsg.innerHTML+='<br>[ NEGATIVE RESPONSE NOT PERMITTED ]';}
-function resolveEmergency(){emergencyOverlay.style.display='none';emergencyOverlay.classList.remove('active');}
-loginBtn.onclick=login;searchBtn.onclick=searchFile;staffListTitle.onclick=toggleStaffList;emergencyBtn.onclick=triggerEmergency;document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-</script>
+
+<div id="amnesticOverlay">
+  <h1>[MEMETIC LOCKDOWN]</h1>
+  <p>UNAUTHORIZED ACCESS DETECTED.</p>
+  <div class="blink warning">⚠</div>
+  <p>ADMINISTERING CLASS-A AMNESTICS...</p>
+</div>
+
+<div id="emergencyOverlay">
+  <div id="emergencyContent">
+    <div id="emergencyMsg"></div>
+    <div id="emergencyChoices"></div>
+  </div>
+</div>
+
+<div id="mainTerminal">
+  <div id="logo">SCP FOUNDATION SECURE TERMINAL / SITE-256</div>
+  <div id="statusbar"></div>
+
+  <div class="inputArea">
+    <input id="staffId" placeholder="Enter Personnel ID or SCP ID">
+    <select id="clearance">
+      <option value="0">LV 0</option>
+      <option value="1">LV 1</option>
+      <option value="2">LV 2</option>
+      <option value="3" selected>LV 3</option>
+      <option value="4">LV 4</option>
+      <option value="5">LV 5</option>
+    </select>
+    <button id="searchBtn">SEARCH DATABASE</button>
+  </div>
+
+  <div id="tabs">
+    <button data-tab="personnel">PERSONNEL</button>
+    <button data-tab="ability">PROFILE</button>
+    <button data-tab="artifact">SCP</button>
+    <button data-tab="record">RECORD</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div id="staffListTitle">▼ Show All Registered Personnel</div>
+  <div id="staffList"></div>
+
+  <div class="bottom-controls">
+    <button class="emergency-btn" id="emergencyBtn">REPORT CONTAINMENT BREACH</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
-
