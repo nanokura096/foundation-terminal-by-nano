@@ -19,9 +19,13 @@ let currentFile=null;
 let loginAttempts=0;
 let audioCtx=null;
 
+/* ---------------- AUDIO ---------------- */
+
 function initAudio(){
   try{
-    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(!audioCtx){
+      audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    }
     if(audioCtx.state==='suspended') audioCtx.resume();
   }catch(e){}
 }
@@ -33,15 +37,17 @@ function beep(f,d,v=0.05){
     const g=audioCtx.createGain();
     o.connect(g);
     g.connect(audioCtx.destination);
+
     o.frequency.value=f;
     g.gain.setValueAtTime(v,audioCtx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+d/1000);
+
     o.start();
     o.stop(audioCtx.currentTime+d/1000);
   }catch(e){}
 }
 
-function buzzer(duration=800){
+function buzzer(duration=900){
   if(!audioCtx)return;
   try{
     const o=audioCtx.createOscillator();
@@ -51,9 +57,9 @@ function buzzer(duration=800){
 
     o.type='sawtooth';
     o.frequency.setValueAtTime(120,audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(80,audioCtx.currentTime+duration/1000);
+    o.frequency.linearRampToValueAtTime(70,audioCtx.currentTime+duration/1000);
 
-    g.gain.setValueAtTime(0.12,audioCtx.currentTime);
+    g.gain.setValueAtTime(0.15,audioCtx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+duration/1000);
 
     o.start();
@@ -61,8 +67,22 @@ function buzzer(duration=800){
   }catch(e){}
 }
 
+/* ---------------- UI WARNING ---------------- */
+
+function securityViolation(){
+  buzzer(1300);
+  warningPopup.style.display='flex';
+
+  setTimeout(()=>{
+    warningPopup.style.display='none';
+  },2500);
+}
+
+/* ---------------- LOGIN ---------------- */
+
 function login(){
   initAudio();
+
   const u=username.value.trim();
   const p=password.value.trim();
 
@@ -76,16 +96,21 @@ function login(){
     loginAttempts++;
     loginError.innerText='ACCESS DENIED';
     buzzer(900);
+
     if(loginAttempts>=3) initiateAmnestic();
   }
 }
 
+/* ---------------- AMNESTIC ---------------- */
+
 function initiateAmnestic(){
   buzzer(1500);
   amnesticOverlay.style.display='flex';
-  amnesticOverlay.classList.add('active');
+
   setTimeout(()=>location.reload(),7000);
 }
+
+/* ---------------- BOOT ---------------- */
 
 function startLoadingSequence(){
   bootScreen.style.display='block';
@@ -108,6 +133,7 @@ function startLoadingSequence(){
       d.innerText=lines[i];
       bootScreen.appendChild(d);
       d.scrollIntoView();
+
       beep(500+i*100,40,.03);
       i++;
       setTimeout(add,700);
@@ -115,6 +141,7 @@ function startLoadingSequence(){
       setTimeout(finishBoot,1000);
     }
   }
+
   add();
 }
 
@@ -130,14 +157,36 @@ function updateClock(){
   statusbar.innerText='FOUNDATION ONLINE / SITE-256 / '+new Date().toLocaleString();
 }
 
+/* ---------------- CLEARANCE SYSTEM ---------------- */
+
+function getLevel(){
+  return parseInt(clearance.value);
+}
+
+function deny(){
+  result.innerText='ACCESS DENIED\nINSUFFICIENT CLEARANCE';
+  tabs.style.display='none';
+  currentFile=null;
+  securityViolation();
+  buzzer(1000);
+}
+
+/* ---------------- SEARCH ---------------- */
+
 function searchFile(){
+  initAudio();
+
   const id=staffId.value.trim();
-  const cl=parseInt(clearance.value);
   const f=files.find(x=>x.id===id);
 
-  if(!f||cl<parseInt(f.clearance)){
-    result.innerText='ACCESS DENIED';
+  if(!f){
+    result.innerText='FILE NOT FOUND';
     buzzer(900);
+    return;
+  }
+
+  if(getLevel()<parseInt(f.clearance)){
+    deny();
     return;
   }
 
@@ -146,28 +195,34 @@ function searchFile(){
   showTab('personnel');
 }
 
+/* ---------------- TABS ---------------- */
+
 function showTab(tab){
-  if(!currentFile)return;
+
+  if(!currentFile){
+    result.innerText='NO FILE LOADED';
+    return;
+  }
+
+  if(getLevel()<parseInt(currentFile.clearance)){
+    deny();
+    return;
+  }
+
   let txt='';
 
   if(tab==='personnel'){
     txt=`NAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: ${currentFile.status}\n\n${currentFile.profile}`;
   }
 
-  if(tab==='ability'){
-    txt=currentFile.ability;
-  }
-
-  if(tab==='artifact'){
-    txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;
-  }
-
-  if(tab==='record'){
-    txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
-  }
+  if(tab==='ability') txt=currentFile.ability;
+  if(tab==='artifact') txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;
+  if(tab==='record') txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
 
   result.innerText=txt;
 }
+
+/* ---------------- STAFF LIST ---------------- */
 
 function loadStaffList(){
   staffList.innerHTML='';
@@ -178,8 +233,16 @@ function loadStaffList(){
     d.innerText=`ID: ${f.id} / NAME: ${f.name}`;
 
     d.onclick=()=>{
+      initAudio();
       beep(600,35,.04);
+
       staffId.value=f.id;
+
+      if(getLevel()<parseInt(f.clearance)){
+        deny();
+        return;
+      }
+
       searchFile();
     };
 
@@ -189,20 +252,25 @@ function loadStaffList(){
 
 function toggleStaffList(){
   beep(700,25,.03);
-  staffList.style.display=staffList.style.display==='block'?'none':'block';
+  staffList.style.display=
+    staffList.style.display==='block'?'none':'block';
 }
+
+/* ---------------- EMERGENCY ---------------- */
 
 function triggerEmergency(){
   buzzer(1800);
+
   emergencyOverlay.style.display='flex';
-  emergencyOverlay.classList.add('active');
 
   emergencyMsg.innerHTML='[ CONTAINMENT BREACH ]<br><br>Mobile Task Force has been dispatched.<br>Awaiting situation update.';
+
   emergencyChoices.innerHTML='';
 
   setTimeout(()=>{
     emergencyMsg.innerHTML='Containment restored?<br><br>';
-    emergencyChoices.innerHTML='<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';
+    emergencyChoices.innerHTML=
+      '<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';
   },5000);
 }
 
@@ -216,25 +284,17 @@ function forceYes(){
 function resolveEmergency(){
   beep(850,50,.04);
   emergencyOverlay.style.display='none';
-  emergencyOverlay.classList.remove('active');
 }
 
-loginBtn.onclick=()=>{
-  beep(700,50,.04);
-  login();
-};
+/* ---------------- EVENTS ---------------- */
 
-searchBtn.onclick=()=>{
-  beep(650,40,.04);
-  searchFile();
-};
+loginBtn.onclick=()=>{beep(700,50,.04);login();};
+
+searchBtn.onclick=()=>{beep(650,40,.04);searchFile();};
 
 staffListTitle.onclick=toggleStaffList;
 
-emergencyBtn.onclick=()=>{
-  buzzer(1000);
-  triggerEmergency();
-};
+emergencyBtn.onclick=triggerEmergency;
 
 document.querySelectorAll('#tabs button').forEach(b=>{
   b.onclick=()=>{
@@ -244,21 +304,17 @@ document.querySelectorAll('#tabs button').forEach(b=>{
 });
 
 username.addEventListener('input',()=>{
-  initAudio();
-  beep(950,12,.01);
+  initAudio();beep(950,12,.01);
 });
 
 password.addEventListener('input',()=>{
-  initAudio();
-  beep(950,12,.01);
+  initAudio();beep(950,12,.01);
 });
 
 staffId.addEventListener('input',()=>{
-  initAudio();
-  beep(950,12,.01);
+  initAudio();beep(950,12,.01);
 });
 
 clearance.onchange=()=>{
-  initAudio();
-  beep(750,30,.03);
+  initAudio();beep(750,30,.03);
 };
