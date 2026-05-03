@@ -2,6 +2,8 @@ const files=[
 {
 id:'AP-000000',
 name:'鳴瀬 可楚',
+sex:'FEMALE',
+age:'29',
 division:'Foundation Personnel',
 rank:'Research Supervisor',
 status:'ACTIVE',
@@ -19,7 +21,7 @@ let currentFile=null;
 let loginAttempts=0;
 let audioCtx=null;
 
-/* ---------------- AUDIO ---------------- */
+/* ================= AUDIO ================= */
 
 function initAudio(){
   try{
@@ -67,7 +69,7 @@ function buzzer(duration=900){
   }catch(e){}
 }
 
-/* ---------------- UI WARNING ---------------- */
+/* ================= SECURITY POPUP ================= */
 
 function securityViolation(){
   buzzer(1300);
@@ -78,7 +80,7 @@ function securityViolation(){
   },2500);
 }
 
-/* ---------------- LOGIN ---------------- */
+/* ================= LOGIN ================= */
 
 function login(){
   initAudio();
@@ -101,16 +103,15 @@ function login(){
   }
 }
 
-/* ---------------- AMNESTIC ---------------- */
+/* ================= AMNESTIC ================= */
 
 function initiateAmnestic(){
   buzzer(1500);
   amnesticOverlay.style.display='flex';
-
   setTimeout(()=>location.reload(),7000);
 }
 
-/* ---------------- BOOT ---------------- */
+/* ================= BOOT ================= */
 
 function startLoadingSequence(){
   bootScreen.style.display='block';
@@ -157,7 +158,7 @@ function updateClock(){
   statusbar.innerText='FOUNDATION ONLINE / SITE-256 / '+new Date().toLocaleString();
 }
 
-/* ---------------- CLEARANCE SYSTEM ---------------- */
+/* ================= CLEARANCE ================= */
 
 function getLevel(){
   return parseInt(clearance.value);
@@ -171,7 +172,7 @@ function deny(){
   buzzer(1000);
 }
 
-/* ---------------- SEARCH ---------------- */
+/* ================= SEARCH ================= */
 
 function searchFile(){
   initAudio();
@@ -195,7 +196,7 @@ function searchFile(){
   showTab('personnel');
 }
 
-/* ---------------- TABS ---------------- */
+/* ================= TABS ================= */
 
 function showTab(tab){
 
@@ -212,17 +213,37 @@ function showTab(tab){
   let txt='';
 
   if(tab==='personnel'){
-    txt=`NAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: ${currentFile.status}\n\n${currentFile.profile}`;
+    txt=
+`[PERSONAL DATA]
+ID: ${currentFile.id}
+SEX: ${currentFile.sex}
+AGE: ${currentFile.age}
+
+────────────────────
+
+[FOUNDATION RECORD]
+NAME: ${currentFile.name}
+DIVISION: ${currentFile.division}
+RANK: ${currentFile.rank}
+STATUS: ${currentFile.status}
+
+────────────────────
+
+${currentFile.profile}`;
   }
 
   if(tab==='ability') txt=currentFile.ability;
-  if(tab==='artifact') txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;
-  if(tab==='record') txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
+
+  if(tab==='artifact')
+    txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;
+
+  if(tab==='record')
+    txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
 
   result.innerText=txt;
 }
 
-/* ---------------- STAFF LIST ---------------- */
+/* ================= STAFF LIST ================= */
 
 function loadStaffList(){
   staffList.innerHTML='';
@@ -256,21 +277,22 @@ function toggleStaffList(){
     staffList.style.display==='block'?'none':'block';
 }
 
-/* ---------------- EMERGENCY ---------------- */
+/* ================= EMERGENCY ================= */
 
 function triggerEmergency(){
   buzzer(1800);
 
   emergencyOverlay.style.display='flex';
 
-  emergencyMsg.innerHTML='[ CONTAINMENT BREACH ]<br><br>Mobile Task Force has been dispatched.<br>Awaiting situation update.';
+  emergencyMsg.innerHTML=
+  '[ CONTAINMENT BREACH ]<br><br>Mobile Task Force has been dispatched.<br>Awaiting situation update.';
 
   emergencyChoices.innerHTML='';
 
   setTimeout(()=>{
     emergencyMsg.innerHTML='Containment restored?<br><br>';
     emergencyChoices.innerHTML=
-      '<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';
+    '<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';
   },5000);
 }
 
@@ -286,14 +308,11 @@ function resolveEmergency(){
   emergencyOverlay.style.display='none';
 }
 
-/* ---------------- EVENTS ---------------- */
+/* ================= EVENTS ================= */
 
 loginBtn.onclick=()=>{beep(700,50,.04);login();};
-
 searchBtn.onclick=()=>{beep(650,40,.04);searchFile();};
-
 staffListTitle.onclick=toggleStaffList;
-
 emergencyBtn.onclick=triggerEmergency;
 
 document.querySelectorAll('#tabs button').forEach(b=>{
@@ -303,18 +322,7 @@ document.querySelectorAll('#tabs button').forEach(b=>{
   };
 });
 
-username.addEventListener('input',()=>{
-  initAudio();beep(950,12,.01);
-});
-
-password.addEventListener('input',()=>{
-  initAudio();beep(950,12,.01);
-});
-
-staffId.addEventListener('input',()=>{
-  initAudio();beep(950,12,.01);
-});
-
-clearance.onchange=()=>{
-  initAudio();beep(750,30,.03);
-};
+username.addEventListener('input',()=>{initAudio();beep(950,12,.01);});
+password.addEventListener('input',()=>{initAudio();beep(950,12,.01);});
+staffId.addEventListener('input',()=>{initAudio();beep(950,12,.01);});
+clearance.onchange=()=>{initAudio();beep(750,30,.03);};
