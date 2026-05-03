@@ -261,3 +261,8 @@ button:active,
   white-space: pre-wrap;
   line-height: 1.5;
 }
+
+.status-active { color: #00FF41; }
+.status-deceased { color: #ff3131; }
+.status-kia { color: #ff8c00; }
+.status-unknown { color: #888; }
