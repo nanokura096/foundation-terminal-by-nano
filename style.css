@@ -1,268 +1,269 @@
-:root{
-  --green:#00FF41;
-  --bg:#000;
-  --red:#ff3131;
+:root {
+  --green: #00FF41;
+  --bg: #000;
+  --red: #ff3131;
+  --orange: #ff8c00;
+  --dark-red: #300;
 }
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body{
-  background:var(--bg);
-  color:var(--green);
-  font-family:Courier New, monospace;
-  margin:0;
-  padding:15px;
-  overflow-x:hidden;
+body {
+  background: var(--bg);
+  color: var(--green);
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  padding: 15px;
+  overflow-x: hidden;
 }
 
-/* ---------------- FULL SCREEN LAYERS ---------------- */
+/* --- 走査線エフェクト (CRT演出) --- */
+body::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 99999;
+  background-size: 100% 3px, 2px 100%;
+  pointer-events: none;
+}
 
+/* --- 画面レイヤーの共通設定 --- */
 #loginScreen,
 #amnesticOverlay,
 #emergencyOverlay,
 #bootScreen,
-#warningPopup{
-  position:fixed;
-  inset:0;
+#warningPopup {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 /* ---------------- LOGIN ---------------- */
+#loginScreen {
+  z-index: 9999;
+  display: flex;
+  background: var(--bg);
+}
 
-#loginScreen{
-  z-index:9999;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  background:#000;
+#loginBox {
+  border: 1px solid var(--green);
+  padding: 30px;
+  width: min(360px, 90vw);
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+#loginTitle {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+#loginTitle span {
+  font-size: 12px;
+  opacity: .7;
 }
 
 /* ---------------- BOOT ---------------- */
-
-#bootScreen{
-  z-index:9000;
-  display:none;
-  padding:20px;
-  font-size:14px;
-  line-height:1.6;
-  white-space:pre-wrap;
-  overflow-y:auto;
-  background:#000;
+#bootScreen {
+  z-index: 9000;
+  background: var(--bg);
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 30px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-y: auto;
 }
 
-#bootScreen div{
-  margin-bottom:10px;
-  border-left:2px solid var(--green);
-  padding-left:8px;
+#bootScreen div {
+  margin-bottom: 5px;
+  border-left: 2px solid var(--green);
+  padding-left: 10px;
 }
 
-/* ---------------- OVERLAYS BASE ---------------- */
-
-#amnesticOverlay,
-#emergencyOverlay,
-#warningPopup{
-  display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-
-  /* 重要：デフォは完全遮断 */
-  pointer-events:none;
+/* ---------------- MAIN TERMINAL ---------------- */
+#mainTerminal {
+  display: none;
+  position: relative;
+  z-index: 5;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-/* active時だけ操作可能 */
-#amnesticOverlay.active,
-#emergencyOverlay.active,
-#warningPopup.active{
-  pointer-events:auto !important;
+#logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 2px solid var(--green);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 5px var(--green);
 }
 
-/* ---------------- AMNESTIC ---------------- */
-
-#amnesticOverlay{
-  z-index:10000;
-  background:#300;
-  color:#fff;
-  text-align:center;
-}
-
-/* ---------------- EMERGENCY ---------------- */
-
-#emergencyOverlay{
-  z-index:20000;
-  background:rgba(255,0,0,0.85);
-
-  /* ここが超重要：クリック透過事故防止 */
-  pointer-events:none;
-}
-
-#emergencyOverlay.active{
-  pointer-events:auto !important;
-}
-
-#emergencyContent{
-  background:#000;
-  padding:25px;
-  border:2px solid red;
-  width:85%;
-}
-
-/* ---------------- WARNING POPUP ---------------- */
-
-#warningPopup{
-  z-index:30000;
-  background:rgba(80,0,0,0.75);
-}
-
-#warningBox{
-  width:80%;
-  background:#000;
-  border:2px solid red;
-  color:red;
-  text-align:center;
-  padding:25px;
-  box-shadow:0 0 20px red;
-}
-
-/* ---------------- TERMINAL ---------------- */
-
-#mainTerminal{
-  display:none;
-  position:relative;
-  z-index:5;
-}
-
-#loginBox{
-  border:1px solid var(--green);
-  padding:25px;
-  width:min(340px,90vw);
-  text-align:center;
-}
-
-#loginTitle span{
-  font-size:12px;
-  opacity:.8;
+#statusbar {
+  font-size: 11px;
+  margin-bottom: 20px;
+  opacity: 0.8;
 }
 
 /* ---------------- INPUTS ---------------- */
-
-input,
-select,
-button{
-  width:100%;
-  margin:6px 0;
-  padding:12px;
-  background:#000;
-  color:var(--green);
-  border:1px solid var(--green);
-  font-family:inherit;
-  font-size:16px;
-  touch-action:manipulation;
+input, select, button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  background: transparent;
+  color: var(--green);
+  border: 1px solid var(--green);
+  font-family: inherit;
+  font-size: 16px;
+  outline: none;
 }
 
-button:active,
-.staffEntry:active{
-  transform:scale(.98);
+input:focus, select:focus {
+  background: rgba(0, 255, 65, 0.1);
 }
 
-/* ---------------- HEADER ---------------- */
-
-#logo{
-  font-size:20px;
-  border-bottom:1px solid var(--green);
-  padding-bottom:10px;
-  margin-bottom:15px;
+button {
+  cursor: pointer;
+  transition: 0.2s;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
-#statusbar{
-  font-size:12px;
-  margin-bottom:15px;
+button:hover {
+  background: var(--green);
+  color: var(--bg);
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 /* ---------------- TABS ---------------- */
-
-#tabs{
-  display:none;
-  gap:5px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
+#tabs {
+  display: none; /* JSでflexに切り替え */
+  gap: 5px;
+  margin-bottom: 0px;
 }
 
-#tabs button{
-  flex:1;
-  min-width:80px;
+#tabs button {
+  flex: 1;
+  font-size: 12px;
+  padding: 8px;
+  border-bottom: none;
 }
 
 /* ---------------- RESULT ---------------- */
-
-#result{
-  border:1px solid var(--green);
-  min-height:220px;
-  max-height:50vh;
-  overflow-y:auto;
-  padding:15px;
-  white-space:pre-wrap;
-  background:rgba(0,20,0,.4);
+#result {
+  border: 1px solid var(--green);
+  min-height: 300px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(0, 20, 0, 0.6);
+  line-height: 1.6;
 }
 
 /* ---------------- STAFF LIST ---------------- */
-
-#staffListTitle{
-  margin-top:20px;
-  text-align:center;
-  border-top:1px dashed var(--green);
-  padding-top:15px;
-  cursor:pointer;
+#staffListTitle {
+  margin-top: 30px;
+  text-align: center;
+  border-top: 1px dashed var(--green);
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-#staffList{
-  display:none;
+#staffListTitle:hover {
+  background: rgba(0, 255, 65, 0.1);
 }
 
-.staffEntry{
-  border:1px solid var(--green);
-  padding:10px;
-  margin-top:8px;
-  cursor:pointer;
+#staffList {
+  display: none;
+  margin-bottom: 40px;
 }
 
-/* ---------------- BOTTOM ---------------- */
-
-.bottom-controls{
-  margin-top:30px;
-  text-align:center;
-  border-top:1px double var(--green);
-  padding-top:20px;
+.staffEntry {
+  border: 1px solid var(--green);
+  padding: 12px;
+  margin-top: 8px;
+  cursor: pointer;
 }
 
-.emergency-btn{
-  border-color:red;
-  color:red;
+.staffEntry:hover {
+  background: rgba(0, 255, 65, 0.2);
 }
 
-/* ---------------- ANIMATION ---------------- */
-
-.blink{
-  animation:blink 1s infinite;
+/* ---------------- OVERLAYS ---------------- */
+#amnesticOverlay {
+  z-index: 10000;
+  background: var(--dark-red);
+  color: #fff;
+  text-align: center;
 }
 
-@keyframes blink{
-  50%{opacity:0;}
+#emergencyOverlay {
+  z-index: 20000;
+  background: rgba(255, 0, 0, 0.8);
 }
 
-.warning{
-  font-size:80px;
+#emergencyContent {
+  background: #000;
+  padding: 30px;
+  border: 4px double red;
+  width: 85%;
+  max-width: 500px;
+  text-align: center;
 }
 
-#result {
-  white-space: pre-wrap;
-  line-height: 1.5;
+#emergencyOverlay.active, #amnesticOverlay.active {
+  pointer-events: auto;
 }
 
-.status-active { color: #00FF41; }
-.status-deceased { color: #ff3131; }
-.status-kia { color: #ff8c00; }
+/* ---------------- STATUS COLORS ---------------- */
+.status-active { color: var(--green); font-weight: bold; }
+.status-terminated { color: var(--red); text-decoration: line-through; }
+.status-deceased { color: var(--red); }
+.status-kia { color: var(--orange); }
 .status-unknown { color: #888; }
+
+/* ---------------- UTILS & ANIMATION ---------------- */
+.blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.warning { font-size: 60px; margin: 20px 0; }
+
+.emergency-btn {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.emergency-btn:hover {
+  background: var(--red);
+  color: #fff;
+}
+
+.bottom-controls {
+  margin-top: 50px;
+  padding-bottom: 50px;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--green); }
