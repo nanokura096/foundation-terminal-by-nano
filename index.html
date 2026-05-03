@@ -8,21 +8,24 @@
 </head>
 <body>
 
+<!-- ログイン画面 -->
 <div id="loginScreen">
   <div id="loginBox">
     <div id="loginTitle">
       SECURITY AUTHENTICATION REQUIRED<br>
       <span>SCP FOUNDATION DATABASE TERMINAL</span>
     </div>
-    <input id="username" placeholder="[USER ID]">
+    <input id="username" type="text" placeholder="[USER ID]" autocomplete="off">
     <input id="password" type="password" placeholder="[PASS KEY]">
     <button id="loginBtn">ACCESS DATABASE</button>
     <div id="loginError"></div>
   </div>
 </div>
 
+<!-- ブート画面 -->
 <div id="bootScreen"></div>
 
+<!-- 記憶処理オーバーレイ -->
 <div id="amnesticOverlay">
   <h1>[MEMETIC LOCKDOWN]</h1>
   <p>UNAUTHORIZED ACCESS DETECTED.</p>
@@ -30,24 +33,19 @@
   <p>ADMINISTERING CLASS-A AMNESTICS...</p>
 </div>
 
+<!-- 緊急事態オーバーレイ -->
 <div id="emergencyOverlay">
   <div id="emergencyContent">
     <div id="emergencyMsg"></div>
     <div id="emergencyChoices"></div>
+    <button onclick="location.reload()" style="border-color: #555; color: #555; margin-top: 20px;">REBOOT SYSTEM</button>
   </div>
 </div>
 
-<div id="warningPopup">
-  <div id="warningBox">
-    <div class="blink">[ SECURITY VIOLATION ]</div>
-    <p>INSUFFICIENT CLEARANCE LEVEL</p>
-    <p>THIS ACCESS ATTEMPT HAS BEEN LOGGED</p>
-  </div>
-</div>
-
+<!-- メインターミナル -->
 <div id="mainTerminal">
   <div id="logo">SCP FOUNDATION SECURE TERMINAL / SITE-256</div>
-  <div id="statusbar"></div>
+  <div id="statusbar">SYSTEM STATUS: OFFLINE</div>
 
   <div class="inputArea">
     <input id="staffId" placeholder="Enter Personnel ID or SCP ID">
@@ -62,14 +60,15 @@
     <button id="searchBtn">SEARCH DATABASE</button>
   </div>
 
-  <div id="tabs">
+  <!-- タブボタン（初期は非表示） -->
+  <div id="tabs" style="display: none;">
     <button data-tab="personnel">PERSONNEL</button>
     <button data-tab="ability">PROFILE</button>
     <button data-tab="artifact">SCP</button>
     <button data-tab="record">RECORD</button>
   </div>
 
-  <div id="result"></div>
+  <div id="result">Waiting for query...</div>
 
   <div id="staffListTitle">▼ Show All Registered Personnel</div>
   <div id="staffList"></div>
