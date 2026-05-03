@@ -634,10 +634,12 @@ const files = [
 ];
 
 // --- グローバル変数 ---
+// --- グローバル変数 ---
 let currentFile = null;
 let audioCtx = null;
+let loginAttempts = 0; // 失敗カウント用
 
-// --- 認証設定 (デモ用) ---
+// --- 認証設定 ---
 const AUTH_CONFIG = {
     userId: "ADMIN-256",
     passKey: "SCP-FOUNDATION"
@@ -661,7 +663,8 @@ const UI = {
     staffListTitle: document.getElementById('staffListTitle'),
     emergencyBtn: document.getElementById('emergencyBtn'),
     emergencyOverlay: document.getElementById('emergencyOverlay'),
-    emergencyMsg: document.getElementById('emergencyMsg')
+    emergencyMsg: document.getElementById('emergencyMsg'),
+    amnesticOverlay: document.getElementById('amnesticOverlay')
 };
 
 // --- サウンドエンジン ---
@@ -709,7 +712,7 @@ function searchFile() {
     }
 
     if (userClearance < parseInt(file.clearance)) {
-        UI.result.innerHTML = '<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL (REQUIRED: LV'+file.clearance+').\nTHIS INCIDENT HAS BEEN REPORTED.</span>';
+        UI.result.innerHTML = `<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL (REQUIRED: LV${file.clearance}).\nTHIS INCIDENT HAS BEEN REPORTED.</span>`;
         UI.tabs.style.display = 'none';
         currentFile = null;
         buzzer(1200);
@@ -756,11 +759,25 @@ function showTab(tabName) {
     UI.result.innerHTML = content;
 }
 
-// --- 画面遷移演出 ---
+// --- プロトコル演出 ---
+function executeAmnesticProtocol() {
+    UI.amnesticOverlay.style.display = 'flex';
+    UI.amnesticOverlay.classList.add('active');
+    
+    // 警告音
+    buzzer(2000);
+    setTimeout(() => buzzer(1500), 1000);
+
+    // 5秒後に初期状態へ（リロード）
+    setTimeout(() => {
+        location.reload();
+    }, 5000);
+}
+
 function runBootSequence() {
     UI.loginScreen.style.display = 'none';
     UI.bootScreen.style.display = 'block';
-    UI.bootScreen.innerHTML = ''; // クリア
+    UI.bootScreen.innerHTML = '';
 
     const lines = [
         "INITIALIZING SITE-256 SECURE NETWORK...",
@@ -788,9 +805,9 @@ function runBootSequence() {
     }, 2800);
 }
 
-// --- 初期化 & イベントリスナー ---
+// --- 初期化 ---
 function init() {
-    // 職員リストの自動生成
+    // リスト生成
     UI.staffList.innerHTML = '';
     files.forEach(f => {
         const div = document.createElement('div');
@@ -803,29 +820,32 @@ function init() {
         UI.staffList.appendChild(div);
     });
 
-    // ログイン処理 (バリデーション付き)
+    // ログイン処理
     UI.loginBtn.onclick = () => {
         initAudio();
         const user = UI.usernameInput.value;
         const pass = UI.passwordInput.value;
 
         if (user === AUTH_CONFIG.userId && pass === AUTH_CONFIG.passKey) {
+            loginAttempts = 0;
             UI.loginError.textContent = "";
             runBootSequence();
         } else {
-            UI.loginError.style.color = "red";
-            UI.loginError.textContent = "INVALID CREDENTIALS. ACCESS ATTEMPT LOGGED.";
-            buzzer(1000);
-            // 失敗時に揺らすなどの演出も可
-            UI.loginBox.classList.add('blink');
-            setTimeout(() => UI.loginBox.classList.remove('blink'), 500);
+            loginAttempts++;
+            if (loginAttempts >= 3) {
+                executeAmnesticProtocol();
+            } else {
+                UI.loginError.style.color = "red";
+                UI.loginError.textContent = `INVALID CREDENTIALS. ATTEMPT ${loginAttempts}/3.`;
+                buzzer(800);
+                document.getElementById('loginBox').classList.add('blink');
+                setTimeout(() => document.getElementById('loginBox').classList.remove('blink'), 500);
+            }
         }
     };
 
-    // 検索ボタン
     UI.searchBtn.onclick = searchFile;
 
-    // タブ切り替え
     document.querySelectorAll('#tabs button').forEach(btn => {
         btn.onclick = () => {
             beep(1200, 20);
@@ -833,14 +853,12 @@ function init() {
         };
     });
 
-    // 職員リスト開閉
     UI.staffListTitle.onclick = () => {
         const isShow = UI.staffList.style.display === 'block';
         UI.staffList.style.display = isShow ? 'none' : 'block';
         UI.staffListTitle.textContent = isShow ? "▼ Show All Registered Personnel" : "▲ Hide Registered Personnel";
     };
 
-    // 緊急事態ボタン
     UI.emergencyBtn.onclick = () => {
         buzzer(2000);
         UI.emergencyOverlay.style.display = 'flex';
