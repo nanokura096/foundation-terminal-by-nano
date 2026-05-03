@@ -641,8 +641,8 @@ let loginAttempts = 0; // 失敗カウント用
 
 // --- 認証設定 ---
 const AUTH_CONFIG = {
-    userId: "ADMIN-256",
-    passKey: "SCP-FOUNDATION"
+    userId: "admin",
+    passKey: "226227"
 };
 
 // --- DOM要素の取得 ---
