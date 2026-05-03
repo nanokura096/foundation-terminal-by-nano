@@ -3,7 +3,7 @@
   --bg: #000;
   --red: #ff3131;
   --orange: #ff8c00;
-  --dark-red: #300;
+  --dark-red: #400; /* 少し明るくして不気味に */
 }
 
 * {
@@ -20,7 +20,7 @@ body {
   overflow-x: hidden;
 }
 
-/* --- 走査線エフェクト (CRT演出) --- */
+/* --- 走査線エフェクト --- */
 body::before {
   content: " ";
   display: block;
@@ -37,8 +37,7 @@ body::before {
 #loginScreen,
 #amnesticOverlay,
 #emergencyOverlay,
-#bootScreen,
-#warningPopup {
+#bootScreen {
   position: fixed;
   inset: 0;
   display: none;
@@ -62,15 +61,8 @@ body::before {
   box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
 }
 
-#loginTitle {
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-#loginTitle span {
-  font-size: 12px;
-  opacity: .7;
-}
+#loginTitle { margin-bottom: 20px; font-weight: bold; }
+#loginTitle span { font-size: 12px; opacity: .7; }
 
 /* ---------------- BOOT ---------------- */
 #bootScreen {
@@ -106,14 +98,9 @@ body::before {
   border-bottom: 2px solid var(--green);
   padding-bottom: 10px;
   margin-bottom: 10px;
-  text-shadow: 0 0 5px var(--green);
 }
 
-#statusbar {
-  font-size: 11px;
-  margin-bottom: 20px;
-  opacity: 0.8;
-}
+#statusbar { font-size: 11px; margin-bottom: 20px; opacity: 0.8; }
 
 /* ---------------- INPUTS ---------------- */
 input, select, button {
@@ -128,48 +115,22 @@ input, select, button {
   outline: none;
 }
 
-input:focus, select:focus {
-  background: rgba(0, 255, 65, 0.1);
-}
-
-button {
-  cursor: pointer;
-  transition: 0.2s;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-button:hover {
-  background: var(--green);
-  color: var(--bg);
-}
-
-button:active {
-  transform: scale(0.98);
-}
+input:focus, select:focus { background: rgba(0, 255, 65, 0.1); }
+button:hover { background: var(--green); color: var(--bg); }
 
 /* ---------------- TABS ---------------- */
-#tabs {
-  display: none; /* JSでflexに切り替え */
-  gap: 5px;
-  margin-bottom: 0px;
-}
-
-#tabs button {
-  flex: 1;
-  font-size: 12px;
-  padding: 8px;
-  border-bottom: none;
-}
+#tabs { gap: 5px; margin-top: 10px; }
+#tabs button { flex: 1; font-size: 12px; padding: 8px; border-bottom: none; }
 
 /* ---------------- RESULT ---------------- */
 #result {
   border: 1px solid var(--green);
   min-height: 300px;
-  max-height: 60vh;
+  max-height: 50vh;
   overflow-y: auto;
   padding: 20px;
   background: rgba(0, 20, 0, 0.6);
+  white-space: pre-wrap;
   line-height: 1.6;
 }
 
@@ -180,28 +141,11 @@ button:active {
   border-top: 1px dashed var(--green);
   padding: 15px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-#staffListTitle:hover {
-  background: rgba(0, 255, 65, 0.1);
-}
-
-#staffList {
-  display: none;
-  margin-bottom: 40px;
-}
-
-.staffEntry {
-  border: 1px solid var(--green);
-  padding: 12px;
-  margin-top: 8px;
-  cursor: pointer;
-}
-
-.staffEntry:hover {
-  background: rgba(0, 255, 65, 0.2);
-}
+#staffList { display: none; }
+.staffEntry { border: 1px solid var(--green); padding: 12px; margin-top: 8px; cursor: pointer; }
+.staffEntry:hover { background: rgba(0, 255, 65, 0.2); }
 
 /* ---------------- OVERLAYS ---------------- */
 #amnesticOverlay {
@@ -209,11 +153,14 @@ button:active {
   background: var(--dark-red);
   color: #fff;
   text-align: center;
+  padding: 20px;
 }
+
+#amnesticOverlay h1 { font-size: 2.5rem; letter-spacing: 5px; margin-bottom: 20px; }
 
 #emergencyOverlay {
   z-index: 20000;
-  background: rgba(255, 0, 0, 0.8);
+  background: rgba(255, 0, 0, 0.85);
 }
 
 #emergencyContent {
@@ -225,45 +172,21 @@ button:active {
   text-align: center;
 }
 
-#emergencyOverlay.active, #amnesticOverlay.active {
-  pointer-events: auto;
-}
-
 /* ---------------- STATUS COLORS ---------------- */
 .status-active { color: var(--green); font-weight: bold; }
-.status-terminated { color: var(--red); text-decoration: line-through; }
+.status-terminated { color: var(--red); text-decoration: line-through; opacity: 0.7; }
 .status-deceased { color: var(--red); }
 .status-kia { color: var(--orange); }
-.status-unknown { color: #888; }
 
-/* ---------------- UTILS & ANIMATION ---------------- */
-.blink {
-  animation: blink 1s infinite;
-}
+/* ---------------- UTILS ---------------- */
+.blink { animation: blink 1s infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
+.warning { font-size: 80px; margin: 20px 0; }
+.emergency-btn { color: var(--red); border-color: var(--red); margin-top: 40px; }
+.emergency-btn:hover { background: var(--red); color: #fff; }
 
-.warning { font-size: 60px; margin: 20px 0; }
-
-.emergency-btn {
-  color: var(--red);
-  border-color: var(--red);
-}
-
-.emergency-btn:hover {
-  background: var(--red);
-  color: #fff;
-}
-
-.bottom-controls {
-  margin-top: 50px;
-  padding-bottom: 50px;
-}
-
-/* スクロールバーのカスタマイズ */
+/* スクロールバー */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: var(--green); }
