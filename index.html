@@ -8,24 +8,26 @@
 </head>
 <body>
 
-<!-- ログイン画面 -->
+<!-- 1. ログイン画面 -->
 <div id="loginScreen">
   <div id="loginBox">
     <div id="loginTitle">
       SECURITY AUTHENTICATION REQUIRED<br>
       <span>SCP FOUNDATION DATABASE TERMINAL</span>
     </div>
+    <!-- オートコンプリートをオフにしてセキュリティ端末感を演出 -->
     <input id="username" type="text" placeholder="[USER ID]" autocomplete="off">
     <input id="password" type="password" placeholder="[PASS KEY]">
     <button id="loginBtn">ACCESS DATABASE</button>
-    <div id="loginError"></div>
+    <!-- JSからログイン失敗回数などを表示するエリア -->
+    <div id="loginError" style="margin-top: 15px; font-size: 12px; min-height: 1.2em; color: var(--red);"></div>
   </div>
 </div>
 
-<!-- ブート画面 -->
+<!-- 2. ブート画面（読み込み演出用） -->
 <div id="bootScreen"></div>
 
-<!-- 記憶処理オーバーレイ -->
+<!-- 3. 記憶処理オーバーレイ（3回失敗時に発動） -->
 <div id="amnesticOverlay">
   <h1>[MEMETIC LOCKDOWN]</h1>
   <p>UNAUTHORIZED ACCESS DETECTED.</p>
@@ -33,19 +35,19 @@
   <p>ADMINISTERING CLASS-A AMNESTICS...</p>
 </div>
 
-<!-- 緊急事態オーバーレイ -->
+<!-- 4. 緊急事態オーバーレイ（収容違反報告時） -->
 <div id="emergencyOverlay">
   <div id="emergencyContent">
     <div id="emergencyMsg"></div>
     <div id="emergencyChoices"></div>
-    <button onclick="location.reload()" style="border-color: #555; color: #555; margin-top: 20px;">REBOOT SYSTEM</button>
+    <button onclick="location.reload()" style="border-color: #555; color: #ccc; margin-top: 20px;">REBOOT SYSTEM</button>
   </div>
 </div>
 
-<!-- メインターミナル -->
+<!-- 5. メインターミナル -->
 <div id="mainTerminal">
   <div id="logo">SCP FOUNDATION SECURE TERMINAL / SITE-256</div>
-  <div id="statusbar">SYSTEM STATUS: OFFLINE</div>
+  <div id="statusbar">SYSTEM STATUS: ONLINE | USER: UNKNOWN</div>
 
   <div class="inputArea">
     <input id="staffId" placeholder="Enter Personnel ID or SCP ID">
@@ -60,8 +62,8 @@
     <button id="searchBtn">SEARCH DATABASE</button>
   </div>
 
-  <!-- タブボタン（初期は非表示） -->
-  <div id="tabs" style="display: none;">
+  <!-- タブボタン（検索成功時にJSから flex に切り替え） -->
+  <div id="tabs" style="display: none; gap: 5px; flex-wrap: wrap; margin-bottom: 0px;">
     <button data-tab="personnel">PERSONNEL</button>
     <button data-tab="ability">PROFILE</button>
     <button data-tab="artifact">SCP</button>
