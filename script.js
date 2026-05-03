@@ -8,12 +8,22 @@ division:'Foundation Personnel',
 rank:'Research Supervisor',
 status:'ACTIVE',
 clearance:'3',
+
+need:'LEVEL-3',
+
 profile:'サイト-256所属職員。複数異常案件への対応経験を持つ。',
-ability:'[PERSONNEL PROFILE]\n戦闘・調査両面において高い適応能力を示す。\n精神汚染耐性試験にて良好な数値を記録。',
+ability:'戦闘・調査両面において高い適応能力を示す。',
 weapon:'SCP-███',
-Description:'収容違反時にのみ使用を許可された異常装備。\n攻撃対象の行動結果を強制的に阻害する。',
-record:'複数機密記録はO5評議会承認が必要。',
-note:'現在も監視継続中。'
+weaponinfo:'収容違反時にのみ使用許可。',
+record:'O5承認が必要な機密記録あり。',
+note:'現在も監視継続中。',
+
+extraInfo:[
+  {level:1,label:"NOTE",value:"通常観察対象として登録済み"},
+  {level:3,label:"BEHAVIOR",value:"異常な集中力および判断速度の上昇を確認"},
+  {level:4,label:"CLASSIFIED",value:"O5評議会管理下データ。閲覧制限あり"},
+  {level:5,label:"BLACK",value:"████████████████████"}
+]
 }
 ];
 
@@ -69,105 +79,6 @@ function buzzer(t=900){
   }catch(e){}
 }
 
-/* ================= AUTH CLEARANCE ================= */
-
-function clearanceAuth(){
-  initAudio();
-  buzzer(900);
-
-  const old=result.innerText;
-
-  tabs.style.display='none';
-  result.innerText='[ CLEARANCE AUTHENTICATING... ]';
-
-  setTimeout(()=>{
-    beep(700,40,.03);
-    result.innerText='[ CLEARANCE VERIFIED ]';
-  },900);
-
-  setTimeout(()=>{
-    result.innerText=old || '[ READY ]';
-  },1800);
-}
-
-/* ================= LOGIN ================= */
-
-function login(){
-  initAudio();
-
-  const u=username.value.trim();
-  const p=password.value.trim();
-
-  if(u==='admin'&&p==='226227'){
-    loginBox.innerHTML='<div class="blink">AUTHENTICATING...</div>';
-    setTimeout(()=>{
-      loginScreen.style.display='none';
-      startLoadingSequence();
-    },1200);
-  }else{
-    loginAttempts++;
-    loginError.innerText='ACCESS DENIED';
-    buzzer(900);
-
-    if(loginAttempts>=3) initiateAmnestic();
-  }
-}
-
-/* ================= AMNESTIC ================= */
-
-function initiateAmnestic(){
-  buzzer(1500);
-  amnesticOverlay.style.display='flex';
-  setTimeout(()=>location.reload(),7000);
-}
-
-/* ================= BOOT ================= */
-
-function startLoadingSequence(){
-  bootScreen.style.display='block';
-  bootScreen.innerHTML='';
-
-  const lines=[
-    '> SCP FOUNDATION ENCRYPTED BOOT...',
-    '> VERIFYING SITE-256 NETWORK... [OK]',
-    '> DECRYPTING SECURE ARCHIVES...',
-    '> MEMETIC FILTER ENABLED...',
-    '> CLEARANCE LEVEL ACCEPTED...',
-    '> WELCOME, AUTHORIZED PERSONNEL.'
-  ];
-
-  let i=0;
-
-  function add(){
-    if(i<lines.length){
-      const d=document.createElement('div');
-      d.innerText=lines[i];
-      bootScreen.appendChild(d);
-      d.scrollIntoView();
-
-      beep(500+i*100,40,.03);
-      i++;
-      setTimeout(add,700);
-    }else{
-      setTimeout(finishBoot,1000);
-    }
-  }
-
-  add();
-}
-
-function finishBoot(){
-  bootScreen.style.display='none';
-  mainTerminal.style.display='block';
-  updateClock();
-  setInterval(updateClock,1000);
-  loadStaffList();
-}
-
-function updateClock(){
-  statusbar.innerText='FOUNDATION ONLINE / SITE-256 / '+new Date().toLocaleString();
-}
-
 /* ================= CLEARANCE ================= */
 
 function getLevel(){
@@ -205,7 +116,7 @@ function searchFile(){
   showTab('personnel');
 }
 
-/* ================= TABS ================= */
+/* ================= TAB SYSTEM ================= */
 
 function showTab(tab){
 
@@ -221,7 +132,9 @@ function showTab(tab){
 
   let txt='';
 
+  /* ================= PERSONNEL ================= */
   if(tab==='personnel'){
+
     txt=
 `[PERSONAL DATA]
 ID: ${currentFile.id}
@@ -239,12 +152,25 @@ STATUS: ${currentFile.status}
 ────────────────────
 
 ${currentFile.profile}`;
+
+    /* ================= ADDITIONAL INFO ================= */
+    const extra=currentFile.extraInfo || [];
+
+    const filtered=extra.filter(e=>getLevel()>=e.level);
+
+    if(filtered.length>0){
+      txt+=`\n\n────────────────────\n[ADDITIONAL DATA]\n`;
+
+      filtered.forEach(e=>{
+        txt+=`\n[LV${e.level}] ${e.label}\n${e.value}\n`;
+      });
+    }
   }
 
   if(tab==='ability') txt=currentFile.ability;
 
   if(tab==='artifact')
-    txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;
+    txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.weaponinfo}`;
 
   if(tab==='record')
     txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
@@ -252,7 +178,7 @@ ${currentFile.profile}`;
   result.innerText=txt;
 }
 
-/* ================= STAFF ================= */
+/* ================= STAFF LIST ================= */
 
 function loadStaffList(){
   staffList.innerHTML='';
@@ -280,6 +206,8 @@ function loadStaffList(){
   });
 }
 
+/* ================= UI ================= */
+
 function toggleStaffList(){
   beep(700,25,.03);
   staffList.style.display=
@@ -301,5 +229,7 @@ document.querySelectorAll('#tabs button').forEach(b=>{
 });
 
 clearance.onchange=()=>{
+  initAudio();
+  beep(750,30,.03);
   clearanceAuth();
 };
