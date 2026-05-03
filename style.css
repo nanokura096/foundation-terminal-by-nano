@@ -21,7 +21,8 @@ body{
 #loginScreen,
 #amnesticOverlay,
 #emergencyOverlay,
-#bootScreen{
+#bootScreen,
+#warningPopup{
   position:fixed;
   inset:0;
 }
@@ -53,7 +54,8 @@ body{
 }
 
 #amnesticOverlay,
-#emergencyOverlay{
+#emergencyOverlay,
+#warningPopup{
   display:none;
   justify-content:center;
   align-items:center;
@@ -73,8 +75,24 @@ body{
   background:rgba(255,0,0,0.8);
 }
 
+#warningPopup{
+  z-index:30000;
+  background:rgba(80,0,0,0.75);
+}
+
+#warningBox{
+  width:80%;
+  background:#000;
+  border:2px solid red;
+  color:red;
+  text-align:center;
+  padding:25px;
+  box-shadow:0 0 20px red;
+}
+
 #amnesticOverlay.active,
-#emergencyOverlay.active{
+#emergencyOverlay.active,
+#warningPopup.active{
   pointer-events:auto;
 }
 
