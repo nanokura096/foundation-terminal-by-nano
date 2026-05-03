@@ -49,7 +49,7 @@ function beep(f,d,v=0.05){
   }catch(e){}
 }
 
-function buzzer(duration=900){
+function buzzer(t=900){
   if(!audioCtx)return;
   try{
     const o=audioCtx.createOscillator();
@@ -59,25 +59,35 @@ function buzzer(duration=900){
 
     o.type='sawtooth';
     o.frequency.setValueAtTime(120,audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(70,audioCtx.currentTime+duration/1000);
+    o.frequency.linearRampToValueAtTime(70,audioCtx.currentTime+t/1000);
 
     g.gain.setValueAtTime(0.15,audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+duration/1000);
+    g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+t/1000);
 
     o.start();
-    o.stop(audioCtx.currentTime+duration/1000);
+    o.stop(audioCtx.currentTime+t/1000);
   }catch(e){}
 }
 
-/* ================= SECURITY POPUP ================= */
+/* ================= AUTH CLEARANCE ================= */
 
-function securityViolation(){
-  buzzer(1300);
-  warningPopup.style.display='flex';
+function clearanceAuth(){
+  initAudio();
+  buzzer(900);
+
+  const old=result.innerText;
+
+  tabs.style.display='none';
+  result.innerText='[ CLEARANCE AUTHENTICATING... ]';
 
   setTimeout(()=>{
-    warningPopup.style.display='none';
-  },2500);
+    beep(700,40,.03);
+    result.innerText='[ CLEARANCE VERIFIED ]';
+  },900);
+
+  setTimeout(()=>{
+    result.innerText=old || '[ READY ]';
+  },1800);
 }
 
 /* ================= LOGIN ================= */
@@ -168,7 +178,6 @@ function deny(){
   result.innerText='ACCESS DENIED\nINSUFFICIENT CLEARANCE';
   tabs.style.display='none';
   currentFile=null;
-  securityViolation();
   buzzer(1000);
 }
 
@@ -243,7 +252,7 @@ ${currentFile.profile}`;
   result.innerText=txt;
 }
 
-/* ================= STAFF LIST ================= */
+/* ================= STAFF ================= */
 
 function loadStaffList(){
   staffList.innerHTML='';
@@ -277,37 +286,6 @@ function toggleStaffList(){
     staffList.style.display==='block'?'none':'block';
 }
 
-/* ================= EMERGENCY ================= */
-
-function triggerEmergency(){
-  buzzer(1800);
-
-  emergencyOverlay.style.display='flex';
-
-  emergencyMsg.innerHTML=
-  '[ CONTAINMENT BREACH ]<br><br>Mobile Task Force has been dispatched.<br>Awaiting situation update.';
-
-  emergencyChoices.innerHTML='';
-
-  setTimeout(()=>{
-    emergencyMsg.innerHTML='Containment restored?<br><br>';
-    emergencyChoices.innerHTML=
-    '<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';
-  },5000);
-}
-
-function forceYes(){
-  buzzer(700);
-  noBtn.innerText='YES';
-  noBtn.onclick=resolveEmergency;
-  emergencyMsg.innerHTML+='<br>[ NEGATIVE RESPONSE NOT PERMITTED ]';
-}
-
-function resolveEmergency(){
-  beep(850,50,.04);
-  emergencyOverlay.style.display='none';
-}
-
 /* ================= EVENTS ================= */
 
 loginBtn.onclick=()=>{beep(700,50,.04);login();};
@@ -322,7 +300,6 @@ document.querySelectorAll('#tabs button').forEach(b=>{
   };
 });
 
-username.addEventListener('input',()=>{initAudio();beep(950,12,.01);});
-password.addEventListener('input',()=>{initAudio();beep(950,12,.01);});
-staffId.addEventListener('input',()=>{initAudio();beep(950,12,.01);});
-clearance.onchange=()=>{initAudio();beep(750,30,.03);};
+clearance.onchange=()=>{
+  clearanceAuth();
+};
