@@ -118,6 +118,19 @@ function searchFile(){
 
 /* ================= TAB SYSTEM ================= */
 
+function getStatusClass(status){
+  switch(status){
+    case "ACTIVE":
+      return "status-active";
+    case "KIA":
+      return "status-kia";
+    case "TERMINATED":
+      return "status-terminated";
+    default:
+      return "status-unknown";
+  }
+}
+
 function showTab(tab){
 
   if(!currentFile){
@@ -131,6 +144,55 @@ function showTab(tab){
   }
 
   let txt='';
+
+  if(tab==='personnel'){
+
+    const statusClass = getStatusClass(currentFile.status);
+
+    txt =
+`[PERSONAL DATA]
+ID: ${currentFile.id}
+SEX: ${currentFile.sex}
+AGE: ${currentFile.age}
+
+────────────────────
+
+[FOUNDATION RECORD]
+NAME: ${currentFile.name}
+DIVISION: ${currentFile.division}
+RANK: ${currentFile.rank}
+STATUS: ${currentFile.status}
+
+────────────────────
+
+${currentFile.profile}`;
+
+    /* ================= ADDITIONAL INFO ================= */
+    const extra = currentFile.extraInfo || [];
+    const filtered = extra.filter(e => getLevel() >= e.level);
+
+    if(filtered.length > 0){
+      txt += `\n\n────────────────────\n[ADDITIONAL DATA]\n`;
+
+      filtered.forEach(e=>{
+        txt += `\n[LV${e.level}] ${e.label}\n${e.value}\n`;
+      });
+    }
+
+    /* ステータス表示をHTMLで追加 */
+    txt += `\n\nSTATUS: <span class="${statusClass}">${currentFile.status}</span>`;
+  }
+
+  if(tab==='ability') txt=currentFile.ability;
+
+  if(tab==='artifact')
+    txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.weaponinfo}`;
+
+  if(tab==='record')
+    txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
+
+  result.innerHTML = txt;
+}
 
   /* ================= PERSONNEL ================= */
   if(tab==='personnel'){
