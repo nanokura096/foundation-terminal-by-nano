@@ -634,108 +634,98 @@ const files = [
 ];
 
 
-// --- グローバル変数 ---
+// --- グローバル変数 ---// --- グローバル変数 ---
 let currentFile = null;
 let audioCtx = null;
 
-// --- DOM要素の取得 (HTML側にこれらのIDが存在することを想定) ---
-const elements = {
+// --- DOM要素の取得 ---
+const UI = {
+  loginScreen: document.getElementById('loginScreen'),
+  loginBtn: document.getElementById('loginBtn'),
+  bootScreen: document.getElementById('bootScreen'),
+  mainTerminal: document.getElementById('mainTerminal'),
   staffId: document.getElementById('staffId'),
   clearance: document.getElementById('clearance'),
+  searchBtn: document.getElementById('searchBtn'),
   result: document.getElementById('result'),
   tabs: document.getElementById('tabs'),
-  staffList: document.getElementById('staffList')
+  staffList: document.getElementById('staffList'),
+  staffListTitle: document.getElementById('staffListTitle'),
+  emergencyBtn: document.getElementById('emergencyBtn'),
+  emergencyOverlay: document.getElementById('emergencyOverlay'),
+  emergencyMsg: document.getElementById('emergencyMsg')
 };
 
-/**
- * オーディオコンテキストの初期化 (ブラウザの制限回避用)
- */
+// --- サウンドエンジン ---
 function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
-/**
- * 電子音の再生
- */
 function beep(freq, duration, vol = 0.05) {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
+  osc.connect(gain); gain.connect(audioCtx.destination);
   osc.frequency.value = freq;
   gain.gain.setValueAtTime(vol, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration / 1000);
+  osc.start(); osc.stop(audioCtx.currentTime + duration / 1000);
 }
 
-/**
- * 拒否ブザー音
- */
 function buzzer(t = 900) {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
+  osc.connect(gain); gain.connect(audioCtx.destination);
   osc.type = 'sawtooth';
   osc.frequency.setValueAtTime(120, audioCtx.currentTime);
   osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + t / 1000);
   gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t / 1000);
-  osc.start();
-  osc.stop(audioCtx.currentTime + t / 1000);
+  osc.start(); osc.stop(audioCtx.currentTime + t / 1000);
 }
 
-/**
- * ファイル検索と権限照合
- */
+// --- ロジック: 検索・表示 ---
 function searchFile() {
   initAudio();
-  const id = elements.staffId.value.trim();
-  const userClearance = parseInt(elements.clearance.value);
+  const id = UI.staffId.value.trim();
+  const userClearance = parseInt(UI.clearance.value);
   const file = files.find(f => f.id === id);
 
   if (!file) {
-    elements.result.innerText = 'FILE NOT FOUND';
+    UI.result.innerText = 'FILE NOT FOUND IN DATABASE.';
+    UI.tabs.style.display = 'none';
     buzzer();
     return;
   }
 
   if (userClearance < parseInt(file.clearance)) {
-    elements.result.innerHTML = '<span style="color:red">ACCESS DENIED\nINSUFFICIENT CLEARANCE</span>';
-    elements.tabs.style.display = 'none';
+    UI.result.innerHTML = '<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL.</span>';
+    UI.tabs.style.display = 'none';
     currentFile = null;
-    buzzer(1000);
+    buzzer(1200);
     return;
   }
 
   currentFile = file;
-  elements.tabs.style.display = 'flex';
+  UI.tabs.style.display = 'flex';
+  beep(880, 50);
   showTab('personnel');
 }
 
-/**
- * タブごとのデータ表示
- */
 function showTab(tabName) {
   if (!currentFile) return;
-  const userClearance = parseInt(elements.clearance.value);
+  const userClearance = parseInt(UI.clearance.value);
   let content = '';
 
   switch (tabName) {
     case 'personnel':
+      const statusClass = `status-${currentFile.status.toLowerCase()}`;
       content = `[PERSONAL DATA]\nID: ${currentFile.id}\nSEX: ${currentFile.sex}\nAGE: ${currentFile.age}\n\n`;
-      content += `────────────────────\n\n[FOUNDATION RECORD]\nNAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: ${currentFile.status}\n\n`;
+      content += `────────────────────\n\n[FOUNDATION RECORD]\nNAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: <span class="${statusClass}">${currentFile.status}</span>\n\n`;
       content += `────────────────────\n\n${currentFile.profile}`;
       
-      // クリアランスに応じた追加情報の表示
       const extra = currentFile.extraInfo || [];
       const filtered = extra.filter(e => userClearance >= e.level);
       if (filtered.length > 0) {
@@ -745,41 +735,88 @@ function showTab(tabName) {
         });
       }
       break;
-
     case 'ability':
-      content = currentFile.ability;
+      content = `[SUBJECT ABILITY PROFILE]\n\n${currentFile.ability}`;
       break;
-
     case 'artifact':
-      content = `SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.weaponinfo || 'NO DATA'}`;
+      content = `[EQUIPMENT / SCP DESIGNATION]\n\nSCP: ${currentFile.weapon}\n\nDESCRIPTION:\n${currentFile.weaponinfo || 'NO DATA'}`;
       break;
-
     case 'record':
-      content = `RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
+      content = `[MISSION RECORD]\n\n${currentFile.record}\n\n────────────────────\n[ADMIN NOTE]\n\n${currentFile.note}`;
       break;
   }
-
-  elements.result.innerHTML = content;
+  UI.result.innerHTML = content;
 }
 
-/**
- * 職員リストの初期化
- */
-function initStaffList() {
-  if (!elements.staffList) return;
-  elements.staffList.innerHTML = '';
+// --- 初期化 & イベント ---
+function init() {
+  // 職員リスト生成
+  UI.staffList.innerHTML = '';
   files.forEach(f => {
     const div = document.createElement('div');
-    div.style.cursor = 'pointer';
-    div.style.padding = '5px';
+    div.className = 'staffEntry';
     div.innerText = `ID: ${f.id} / ${f.name}`;
     div.onclick = () => {
-      elements.staffId.value = f.id;
+      UI.staffId.value = f.id;
       searchFile();
     };
-    elements.staffList.appendChild(div);
+    UI.staffList.appendChild(div);
   });
+
+  // ログイン処理
+  UI.loginBtn.onclick = () => {
+    initAudio();
+    beep(1000, 100);
+    UI.loginScreen.style.display = 'none';
+    UI.bootScreen.style.display = 'block';
+
+    const lines = [
+      "AUTHENTICATING...",
+      "BYPASSING SITE-256 FIREWALL...",
+      "DECRYPTING PERSONNEL FILES...",
+      "ACCESS GRANTED. WELCOME TO SCP FOUNDATION NETWORK."
+    ];
+    lines.forEach((l, i) => {
+      setTimeout(() => {
+        const d = document.createElement('div');
+        d.textContent = `> ${l}`;
+        UI.bootScreen.appendChild(d);
+        UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
+      }, i * 500);
+    });
+
+    setTimeout(() => {
+      UI.bootScreen.style.display = 'none';
+      UI.mainTerminal.style.display = 'block';
+      document.getElementById('statusbar').textContent = "SYSTEM STATUS: ONLINE | USER: AUTHORIZED";
+    }, 2500);
+  };
+
+  // 検索ボタン
+  UI.searchBtn.onclick = searchFile;
+
+  // タブボタン
+  document.querySelectorAll('#tabs button').forEach(btn => {
+    btn.onclick = () => {
+      beep(1200, 20);
+      showTab(btn.dataset.tab);
+    };
+  });
+
+  // リスト開閉
+  UI.staffListTitle.onclick = () => {
+    const isShow = UI.staffList.style.display === 'block';
+    UI.staffList.style.display = isShow ? 'none' : 'block';
+    UI.staffListTitle.textContent = isShow ? "▼ Show All Registered Personnel" : "▲ Hide Registered Personnel";
+  };
+
+  // 緊急ボタン
+  UI.emergencyBtn.onclick = () => {
+    buzzer(2000);
+    UI.emergencyOverlay.style.display = 'flex';
+    UI.emergencyOverlay.classList.add('active');
+    UI.emergencyMsg.innerHTML = "<h2 class='blink'>CONTAINMENT BREACH ALERT</h2><p>SITE-256 HAS BEEN PLACED UNDER QUARANTINE.</p>";
+  };
 }
 
-// ページ読み込み時の処理
-window.onload = initStaffList;
+window.onload = init;
