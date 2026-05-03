@@ -256,3 +256,8 @@ button:active,
 .warning{
   font-size:80px;
 }
+
+#result {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
