@@ -1,60 +1,264 @@
-/* =========================
-   DATABASE
-========================= */
-const files = [
-  {
-    id:"AP-000000",
-    name:"鳴瀬 可楚",
-    sex:"FEMALE",
-    age:"██",
-    division:"鳴響",
-    rank:"Leader",
-    ability:`因報
-強大な力を利用して戦闘を行うが彼女自身には限界がないため危険な状態に陥っても活動を続ける可能性がある。
-また、翠色の結晶を飛ばすことが可能で、任意のタイミングで爆破可能。
-だが、観測者が増えるごとに威力が弱まる。`,
-    status:"ACTIVE",
-    clearance:"3",
-    profile:"対象は鳴響隊長である。",
-    weapon:"天理楔",
-    Description:`全長██cmの鉾。
-天逆鉾のような形をしているが、柄([アクセス拒否])は取り外しが可。
-その柄は鳴響チーム所属隊員αの体とリンクしており、能力を鉾で発動することもできる。
-また、攻撃された人間の行動を「拒否」することが可能。`,
-    record:"[アクセス拒否]",
-    note:"精神状態は安定しているが、いつも問題を持ってくる。"
-  }
+const files=[
+{
+id:'AP-000000',
+name:'鳴瀬 可楚',
+division:'Foundation Personnel',
+rank:'Research Supervisor',
+status:'ACTIVE',
+clearance:'3',
+profile:'サイト-256所属職員。複数異常案件への対応経験を持つ。',
+ability:'[PERSONNEL PROFILE]\n戦闘・調査両面において高い適応能力を示す。\n精神汚染耐性試験にて良好な数値を記録。',
+weapon:'SCP-███',
+Description:'収容違反時にのみ使用を許可された異常装備。\n攻撃対象の行動結果を強制的に阻害する。',
+record:'複数機密記録はO5評議会承認が必要。',
+note:'現在も監視継続中。'
+}
 ];
+
 let currentFile=null;
 let loginAttempts=0;
-const MAX_ATTEMPTS=3;
 let audioCtx=null;
-let emergencyInterval=null;
-function initAudio(){try{if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)();}if(audioCtx.state==="suspended")audioCtx.resume();}catch(e){}}
-function beep(freq,dur,vol=0.05){if(!audioCtx)return;try{const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.connect(gain);gain.connect(audioCtx.destination);osc.frequency.value=freq;osc.type="square";gain.gain.setValueAtTime(vol,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+dur/1000);osc.start();osc.stop(audioCtx.currentTime+dur/1000);}catch(e){}}
-function login(){initAudio();const u=document.getElementById("username").value.trim();const p=document.getElementById("password").value.trim();const err=document.getElementById("loginError");if(u==="admin"&&p==="226227"){loginAttempts=0;document.getElementById("loginBox").innerHTML=`<div class="blink">AUTHENTICATING...</div>`;beep(900,120,0.08);setTimeout(()=>{document.getElementById("loginScreen").style.display="none";startLoadingSequence();},1200);}else{loginAttempts++;beep(180,500,0.15);if(loginAttempts>=MAX_ATTEMPTS){initiateAmnestic();}else{err.innerText=`ACCESS DENIED. REMAINING: ${MAX_ATTEMPTS-loginAttempts}`;}}}
-function initiateAmnestic(){const ov=document.getElementById("amnesticOverlay");ov.style.display="flex";ov.classList.add("active");const siren=setInterval(()=>{beep(100,700,0.2);setTimeout(()=>beep(150,700,0.2),800);},1600);setTimeout(()=>{clearInterval(siren);location.reload();},8000);}
-function startLoadingSequence(){const boot=document.getElementById("bootScreen");boot.style.display="block";boot.innerHTML="";const lines=["> INITIALIZING BOOT SEQUENCE...","> CHECKING HARDWARE... [OK]","> CONNECTING TO SCP-INTRANET... [CONNECTED]","> LOADING ENCRYPTION MODULES...","> VERIFYING CLEARANCE LEVEL...","> WELCOME, ADMINISTRATOR."];let i=0;function add(){if(i<lines.length){const div=document.createElement("div");div.innerText=lines[i];boot.appendChild(div);div.scrollIntoView({behavior:"smooth",block:"end"});beep(500+i*120,40,0.03);i++;setTimeout(add,700);}else{setTimeout(finishBoot,1000);}}add();}
-function finishBoot(){document.getElementById("bootScreen").style.display="none";document.getElementById("mainTerminal").style.display="block";updateClock();setInterval(updateClock,1000);loadStaffList();setupClearanceListener();setupButtons();}
-function setupButtons(){document.getElementById("loginBtn").onclick=login;document.getElementById("searchBtn").onclick=searchFile;document.getElementById("staffListTitle").onclick=toggleStaffList;document.getElementById("emergencyBtn").onclick=triggerEmergency;document.querySelectorAll("#tabs button").forEach(btn=>{btn.onclick=()=>showTab(btn.dataset.tab);});}
-function setupClearanceListener(){const select=document.getElementById("clearance");select.onchange=function(e){const res=document.getElementById("result");beep(1200,50,0.05);res.innerHTML=`<div class="blink" style="text-align:center;margin-top:50px;">[ AUTHENTICATING LEVEL ${e.target.value}... ]</div>`;setTimeout(()=>{if(document.getElementById("staffId").value.trim()){searchFile();}else{res.innerText="READY";}},800);};}
-function updateClock(){document.getElementById("statusbar").innerText="SYSTEM ONLINE / USER: admin / "+new Date().toLocaleString();}
-function searchFile(){initAudio();const id=document.getElementById("staffId").value.trim();const cl=parseInt(document.getElementById("clearance").value);const found=files.find(f=>f.id===id);const r=document.getElementById("result");if(!found||cl<parseInt(found.clearance)){r.innerText="ACCESS DENIED";beep(200,500,0.2);return;}currentFile=found;document.getElementById("tabs").style.display="flex";showTab("personnel");}
-function showTab(tab){if(!currentFile)return;beep(1500,30);const r=document.getElementById("result");r.innerHTML="";r.scrollTop=0;let txt="";if(tab==="personnel"){txt=`NAME: ${currentFile.name}
-DIVISION: ${currentFile.division}
-RANK: ${currentFile.rank}
-STATUS: ${currentFile.status}
 
-${currentFile.profile}`;}if(tab==="ability"){txt=`[ABILITY DATA]
+function initAudio(){
+  try{
+    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+  }catch(e){}
+}
 
-${currentFile.ability}`;}if(tab==="artifact"){txt=`WEAPON: ${currentFile.weapon}
+function beep(f,d,v=0.05){
+  if(!audioCtx)return;
+  try{
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.frequency.value=f;
+    g.gain.setValueAtTime(v,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+d/1000);
+    o.start();
+    o.stop(audioCtx.currentTime+d/1000);
+  }catch(e){}
+}
 
-${currentFile.Description||"NO DATA"}`;}if(tab==="record"){txt=`RECORD: ${currentFile.record}
+function buzzer(duration=800){
+  if(!audioCtx)return;
+  try{
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.connect(g);
+    g.connect(audioCtx.destination);
 
-NOTE: ${currentFile.note}`;}r.innerText=txt;}
-function loadStaffList(){const list=document.getElementById("staffList");list.innerHTML="";files.forEach(f=>{const div=document.createElement("div");div.className="staffEntry";div.innerText=`ID: ${f.id} / NAME: ${f.name}`;div.onclick=()=>{document.getElementById("staffId").value=f.id;searchFile();};list.appendChild(div);});}
-function toggleStaffList(){const list=document.getElementById("staffList");list.style.display=list.style.display==="block"?"none":"block";beep(1000,50,0.04);}
-function triggerEmergency(){initAudio();const ov=document.getElementById("emergencyOverlay");const msg=document.getElementById("emergencyMsg");const choices=document.getElementById("emergencyChoices");ov.style.display="flex";ov.classList.add("active");ov.style.background="rgba(100,0,0,0.9)";emergencyInterval=setInterval(()=>{beep(100,800,0.2);},1000);msg.innerHTML=`[ ALERT ]<br><br>緊急事態を検知。<br>エージェントが向かっています。<br>待機してください。`;choices.innerHTML="";setTimeout(()=>{ov.style.background="black";msg.innerHTML=`SYSTEM_OVERRIDE_COMPLETE...<br><br>緊急事態は解決しましたか？`;choices.innerHTML=`<button onclick="resolveEmergency()">はい</button><button onclick="forceYes()" id="noBtn">いいえ</button>`;beep(1500,200,0.1);},5000);}
-function forceYes(){const noBtn=document.getElementById("noBtn");noBtn.innerText="はい";noBtn.onclick=resolveEmergency;document.getElementById("emergencyMsg").innerHTML+=`<br><span style="color:red;">[ 否定は許可されていません ]</span>`;beep(400,100,0.2);}
-function resolveEmergency(){clearInterval(emergencyInterval);const ov=document.getElementById("emergencyOverlay");ov.style.background="white";setTimeout(()=>{ov.style.display="none";ov.classList.remove("active");ov.style.background="rgba(255,0,0,0.8)";},150);beep(1800,100,0.1);}
-document.addEventListener("DOMContentLoaded",setupButtons);
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(120,audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(80,audioCtx.currentTime+duration/1000);
+
+    g.gain.setValueAtTime(0.12,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+duration/1000);
+
+    o.start();
+    o.stop(audioCtx.currentTime+duration/1000);
+  }catch(e){}
+}
+
+function login(){
+  initAudio();
+  const u=username.value.trim();
+  const p=password.value.trim();
+
+  if(u==='admin'&&p==='226227'){
+    loginBox.innerHTML='<div class="blink">AUTHENTICATING...</div>';
+    setTimeout(()=>{
+      loginScreen.style.display='none';
+      startLoadingSequence();
+    },1200);
+  }else{
+    loginAttempts++;
+    loginError.innerText='ACCESS DENIED';
+    buzzer(900);
+    if(loginAttempts>=3) initiateAmnestic();
+  }
+}
+
+function initiateAmnestic(){
+  buzzer(1500);
+  amnesticOverlay.style.display='flex';
+  amnesticOverlay.classList.add('active');
+  setTimeout(()=>location.reload(),7000);
+}
+
+function startLoadingSequence(){
+  bootScreen.style.display='block';
+  bootScreen.innerHTML='';
+
+  const lines=[
+    '> SCP FOUNDATION ENCRYPTED BOOT...',
+    '> VERIFYING SITE-256 NETWORK... [OK]',
+    '> DECRYPTING SECURE ARCHIVES...',
+    '> MEMETIC FILTER ENABLED...',
+    '> CLEARANCE LEVEL ACCEPTED...',
+    '> WELCOME, AUTHORIZED PERSONNEL.'
+  ];
+
+  let i=0;
+
+  function add(){
+    if(i<lines.length){
+      const d=document.createElement('div');
+      d.innerText=lines[i];
+      bootScreen.appendChild(d);
+      d.scrollIntoView();
+      beep(500+i*100,40,.03);
+      i++;
+      setTimeout(add,700);
+    }else{
+      setTimeout(finishBoot,1000);
+    }
+  }
+  add();
+}
+
+function finishBoot(){
+  bootScreen.style.display='none';
+  mainTerminal.style.display='block';
+  updateClock();
+  setInterval(updateClock,1000);
+  loadStaffList();
+}
+
+function updateClock(){
+  statusbar.innerText='FOUNDATION ONLINE / SITE-256 / '+new Date().toLocaleString();
+}
+
+function searchFile(){
+  const id=staffId.value.trim();
+  const cl=parseInt(clearance.value);
+  const f=files.find(x=>x.id===id);
+
+  if(!f||cl<parseInt(f.clearance)){
+    result.innerText='ACCESS DENIED';
+    buzzer(900);
+    return;
+  }
+
+  currentFile=f;
+  tabs.style.display='flex';
+  showTab('personnel');
+}
+
+function showTab(tab){
+  if(!currentFile)return;
+  let txt='';
+
+  if(tab==='personnel'){
+    txt=`NAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: ${currentFile.status}\n\n${currentFile.profile}`;
+  }
+
+  if(tab==='ability'){
+    txt=currentFile.ability;
+  }
+
+  if(tab==='artifact'){
+    txt=`SCP DESIGNATION: ${currentFile.weapon}\n\n${currentFile.Description}`;
+  }
+
+  if(tab==='record'){
+    txt=`RECORD: ${currentFile.record}\n\nNOTE: ${currentFile.note}`;
+  }
+
+  result.innerText=txt;
+}
+
+function loadStaffList(){
+  staffList.innerHTML='';
+
+  files.forEach(f=>{
+    const d=document.createElement('div');
+    d.className='staffEntry';
+    d.innerText=`ID: ${f.id} / NAME: ${f.name}`;
+
+    d.onclick=()=>{
+      beep(600,35,.04);
+      staffId.value=f.id;
+      searchFile();
+    };
+
+    staffList.appendChild(d);
+  });
+}
+
+function toggleStaffList(){
+  beep(700,25,.03);
+  staffList.style.display=staffList.style.display==='block'?'none':'block';
+}
+
+function triggerEmergency(){
+  buzzer(1800);
+  emergencyOverlay.style.display='flex';
+  emergencyOverlay.classList.add('active');
+
+  emergencyMsg.innerHTML='[ CONTAINMENT BREACH ]<br><br>Mobile Task Force has been dispatched.<br>Awaiting situation update.';
+  emergencyChoices.innerHTML='';
+
+  setTimeout(()=>{
+    emergencyMsg.innerHTML='Containment restored?<br><br>';
+    emergencyChoices.innerHTML='<button onclick="resolveEmergency()">YES</button><button onclick="forceYes()" id="noBtn">NO</button>';
+  },5000);
+}
+
+function forceYes(){
+  buzzer(700);
+  noBtn.innerText='YES';
+  noBtn.onclick=resolveEmergency;
+  emergencyMsg.innerHTML+='<br>[ NEGATIVE RESPONSE NOT PERMITTED ]';
+}
+
+function resolveEmergency(){
+  beep(850,50,.04);
+  emergencyOverlay.style.display='none';
+  emergencyOverlay.classList.remove('active');
+}
+
+loginBtn.onclick=()=>{
+  beep(700,50,.04);
+  login();
+};
+
+searchBtn.onclick=()=>{
+  beep(650,40,.04);
+  searchFile();
+};
+
+staffListTitle.onclick=toggleStaffList;
+
+emergencyBtn.onclick=()=>{
+  buzzer(1000);
+  triggerEmergency();
+};
+
+document.querySelectorAll('#tabs button').forEach(b=>{
+  b.onclick=()=>{
+    beep(820,30,.03);
+    showTab(b.dataset.tab);
+  };
+});
+
+username.addEventListener('input',()=>{
+  initAudio();
+  beep(950,12,.01);
+});
+
+password.addEventListener('input',()=>{
+  initAudio();
+  beep(950,12,.01);
+});
+
+staffId.addEventListener('input',()=>{
+  initAudio();
+  beep(950,12,.01);
+});
+
+clearance.onchange=()=>{
+  initAudio();
+  beep(750,30,.03);
+};
