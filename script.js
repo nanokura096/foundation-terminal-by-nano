@@ -638,27 +638,28 @@ let currentFile = null;
 let audioCtx = null;
 let loginAttempts = 0;
 
-// --- 認証設定 ---
+// =========================
+// AUTH
+// =========================
 const AUTH_CONFIG = {
     userId: "admin",
     passKey: "226227"
 };
 
-// --- DOM取得 ---
+// =========================
+// DOM
+// =========================
 const UI = {
     loginScreen: document.getElementById('loginScreen'),
     loginBtn: document.getElementById('loginBtn'),
     usernameInput: document.getElementById('username'),
     passwordInput: document.getElementById('password'),
     loginError: document.getElementById('loginError'),
-
     bootScreen: document.getElementById('bootScreen'),
     mainTerminal: document.getElementById('mainTerminal'),
-
     staffId: document.getElementById('staffId'),
     clearance: document.getElementById('clearance'),
     searchBtn: document.getElementById('searchBtn'),
-
     result: document.getElementById('result'),
     tabs: document.getElementById('tabs'),
 
@@ -684,7 +685,6 @@ function initAudio() {
 
 function beep(freq, duration, vol = 0.05) {
     if (!audioCtx) return;
-
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
@@ -693,10 +693,7 @@ function beep(freq, duration, vol = 0.05) {
 
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        audioCtx.currentTime + duration / 1000
-    );
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
 
     osc.start();
     osc.stop(audioCtx.currentTime + duration / 1000);
@@ -704,7 +701,6 @@ function beep(freq, duration, vol = 0.05) {
 
 function buzzer(t = 900) {
     if (!audioCtx) return;
-
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
@@ -716,10 +712,7 @@ function buzzer(t = 900) {
     osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + t / 1000);
 
     gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        audioCtx.currentTime + t / 1000
-    );
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t / 1000);
 
     osc.start();
     osc.stop(audioCtx.currentTime + t / 1000);
@@ -730,12 +723,9 @@ function buzzer(t = 900) {
 // =========================
 function executeAmnesticProtocol() {
     UI.amnesticOverlay.style.display = 'flex';
-    UI.amnesticOverlay.classList.add('active');
-
     buzzer(2000);
     setTimeout(() => buzzer(1500), 1000);
     setTimeout(() => buzzer(1500), 2500);
-
     setTimeout(() => location.reload(), 5000);
 }
 
@@ -748,12 +738,9 @@ function runBootSequence() {
     UI.bootScreen.innerHTML = '';
 
     const lines = [
-        "INITIALIZING SITE-256 SECURE NETWORK...",
-        "LOADING MEMETIC KILL AGENT PROTECTION...",
-        "CONNECTING TO GLOBAL DATABASE...",
-        "BYPASSING FIREWALL...",
-        "CHECKING LICENSE...",
-        "AUTHENTICATION SUCCESSFUL.",
+        "INITIALIZING SITE-256...",
+        "CONNECTING DATABASE...",
+        "AUTHENTICATION SUCCESSFUL",
         "WELCOME, AUTHORIZED PERSONNEL."
     ];
 
@@ -762,7 +749,6 @@ function runBootSequence() {
             const d = document.createElement('div');
             d.textContent = `> ${l}`;
             UI.bootScreen.appendChild(d);
-            UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
             beep(400 + i * 80, 20);
         }, i * 400);
     });
@@ -772,8 +758,8 @@ function runBootSequence() {
         UI.mainTerminal.style.display = 'block';
 
         document.getElementById('statusbar').textContent =
-            `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
-    }, 2800);
+            `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | ONLINE`;
+    }, 2000);
 }
 
 // =========================
@@ -788,17 +774,15 @@ function searchFile() {
     const file = files.find(f => f.id === id);
 
     if (!file) {
-        UI.result.innerText = 'ERROR: FILE NOT FOUND.';
+        UI.result.innerText = 'ERROR: FILE NOT FOUND';
         UI.tabs.style.display = 'none';
         buzzer(500);
         return;
     }
 
     if (userClearance < parseInt(file.clearance)) {
-        UI.result.innerHTML = `
-<span style="color:red;font-weight:bold">
+        UI.result.innerHTML = `<span style="color:red;font-weight:bold">
 [ACCESS DENIED]
-INSUFFICIENT CLEARANCE
 </span>`;
         UI.tabs.style.display = 'none';
         currentFile = null;
@@ -808,43 +792,33 @@ INSUFFICIENT CLEARANCE
 
     currentFile = file;
     UI.tabs.style.display = 'flex';
-
     beep(880, 50);
     showTab('personnel');
 }
 
 // =========================
-// TAB VIEW
+// TAB
 // =========================
 function showTab(tabName) {
     if (!currentFile) return;
 
-    const userClearance = parseInt(UI.clearance.value);
     let content = '';
 
     switch (tabName) {
-        case 'personnel': {
-            const statusClass = `status-${currentFile.status.toLowerCase()}`;
+        case 'personnel':
+            content = `
+ID: ${currentFile.id}
+NAME: ${currentFile.name}
+STATUS: ${currentFile.status}
 
-            content =
-                `[PERSONAL DATA]\nID: ${currentFile.id}\nSEX: ${currentFile.sex}\nAGE: ${currentFile.age}\n\n`;
+${currentFile.profile}
+            `;
 
-            content +=
-                `[FOUNDATION RECORD]\nNAME: ${currentFile.name}\nDIVISION: ${currentFile.division}\nRANK: ${currentFile.rank}\nSTATUS: ${currentFile.status}\n\n`;
-
-            content += currentFile.profile;
-
-            const extra = currentFile.extraInfo || [];
-            const filtered = extra.filter(e => userClearance >= e.level);
-
-            if (filtered.length) {
-                content += `\n\n[ADDITIONAL DATA]\n`;
-                filtered.forEach(e => {
-                    content += `\n[LV${e.level}] ${e.label}\n${e.value}\n`;
-                });
+            // 👇 死亡系を赤く
+            if (currentFile.status === "DECEASED" || currentFile.status === "KIA") {
+                content = `<span style="color:red">${content}</span>`;
             }
             break;
-        }
 
         case 'ability':
             content = currentFile.ability;
@@ -863,6 +837,22 @@ function showTab(tabName) {
 }
 
 // =========================
+// STAFF LIST TOGGLE
+// =========================
+let staffOpen = false;
+
+function toggleStaffList() {
+    staffOpen = !staffOpen;
+
+    UI.staffList.style.display = staffOpen ? 'block' : 'none';
+
+    UI.staffListTitle.textContent =
+        staffOpen ? "▲ CLOSE PERSONNEL LIST" : "▼ OPEN PERSONNEL LIST";
+
+    UI.staffListTitle.classList.toggle('active', staffOpen);
+}
+
+// =========================
 // INIT
 // =========================
 function init() {
@@ -871,7 +861,14 @@ function init() {
     files.forEach(f => {
         const div = document.createElement('div');
         div.className = 'staffEntry';
-        div.innerText = `ID: ${f.id} / ${f.name}`;
+
+        // 👇 死亡者は赤
+        if (f.status === "DECEASED" || f.status === "KIA") {
+            div.style.color = "red";
+            div.style.borderColor = "red";
+        }
+
+        div.innerText = `${f.id} / ${f.name}`;
 
         div.onclick = () => {
             UI.staffId.value = f.id;
@@ -893,12 +890,11 @@ function init() {
             runBootSequence();
         } else {
             loginAttempts++;
-
             if (loginAttempts >= 3) {
                 executeAmnesticProtocol();
             } else {
                 UI.loginError.textContent =
-                    `INVALID CREDENTIALS (${loginAttempts}/3)`;
+                    `INVALID (${loginAttempts}/3)`;
                 buzzer(800);
             }
         }
@@ -913,18 +909,18 @@ function init() {
         };
     });
 
-    if (UI.staffListTitle) {
-        UI.staffListTitle.onclick = () => {
-            const show = UI.staffList.style.display !== 'block';
-            UI.staffList.style.display = show ? 'block' : 'none';
-        };
-    }
+    // 👇 ここが改善ポイント
+    UI.staffListTitle.onclick = toggleStaffList;
+
+    // ボタンサイズ対策（事故防止）
+    UI.emergencyBtn.style.fontSize = "12px";
+    UI.emergencyBtn.style.padding = "14px";
 
     UI.emergencyBtn.onclick = () => {
         buzzer(2000);
         UI.emergencyOverlay.style.display = 'flex';
         UI.emergencyMsg.innerHTML =
-            "<h2>[CRITICAL ALERT]</h2><p>CONTAINMENT BREACH</p>";
+            "<h2 style='color:red'>[BREACH]</h2><p>SITE LOCKDOWN</p>";
     };
 }
 

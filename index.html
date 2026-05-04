@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
   <title>SCP TERMINAL</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -57,9 +54,9 @@
 <div id="mainTerminal">
 
   <div id="logo">SCP FOUNDATION SECURE TERMINAL / SITE-256</div>
-
   <div id="statusbar"></div>
 
+  <!-- INPUT AREA -->
   <div class="inputArea">
     <input id="staffId" placeholder="Enter Personnel ID or SCP ID">
 
@@ -83,22 +80,27 @@
     <button data-tab="record">RECORD</button>
   </div>
 
+  <!-- RESULT -->
   <div id="result"></div>
 
-  <div id="staffList"></div>
+  <!-- CONTROLS -->
+  <div class="top-controls">
 
- <div id="staffListTitle">▼ Show All Registered Personnel</div>
-<div id="staffList"></div>
-
-  <div class="bottom-controls">
-    <button id="emergencyBtn" class="emergency-btn">
-      REPORT EMERGENCY SITUATION
+    <button id="staffListTitle" class="small-btn toggle-btn">
+      ▼ PERSONNEL LIST
     </button>
+
+    <button id="emergencyBtn" class="danger-btn">
+      CONTAINMENT BREACH
+    </button>
+
   </div>
+
+  <!-- STAFF LIST -->
+  <div id="staffList"></div>
 
 </div>
 
 <script src="script.js" defer></script>
-
 </body>
 </html>
