@@ -1,4 +1,13 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SCP TERMINAL</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- LOGIN SCREEN -->
@@ -13,7 +22,9 @@
     <input id="password" type="password" placeholder="[PASS KEY]">
     <button id="loginBtn">ACCESS DATABASE</button>
 
-    <div id="loginError" style="margin-top:15px;font-size:12px;min-height:1.2em;color:var(--red);"></div>
+    <div id="loginError"
+      style="margin-top:15px;font-size:12px;min-height:1.2em;color:var(--red);">
+    </div>
   </div>
 </div>
 
@@ -32,7 +43,6 @@
 <div id="emergencyOverlay">
   <div id="emergencyContent">
     <div id="emergencyMsg"></div>
-    <div id="emergencyChoices"></div>
 
     <button onclick="location.reload()"
       style="border-color:#555;color:#ccc;margin-top:20px;">
@@ -64,7 +74,7 @@
   </div>
 
   <!-- TABS -->
-  <div id="tabs" style="display:none;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+  <div id="tabs" style="display:none;gap:5px;flex-wrap:wrap;margin:10px 0;">
     <button data-tab="personnel">PERSONNEL</button>
     <button data-tab="ability">PROFILE</button>
     <button data-tab="artifact">SCP</button>
@@ -75,6 +85,9 @@
 
   <div id="staffList"></div>
 
+  <!-- 👇ここ重要（JSと完全一致） -->
+  <div id="staffListTitle"></div>
+
   <div class="bottom-controls">
     <button id="emergencyBtn" class="emergency-btn">
       REPORT EMERGENCY SITUATION
@@ -84,5 +97,6 @@
 </div>
 
 <script src="script.js" defer></script>
+
 </body>
 </html>
