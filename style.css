@@ -344,3 +344,7 @@ button:active {
     flex-direction: column;
   }
 }
+
+#result {
+  white-space: pre-wrap;
+}
