@@ -633,10 +633,10 @@ const files = [
   },
 ]
 
-// --- グローバル変数 ---
-let currentFile = null,
-    audioCtx = null,
-    loginAttempts = 0;// 失敗カウント用
+
+let currentFile = null;
+let audioCtx = null;
+let loginAttempts = 0; // 失敗カウント用
 
 // --- 認証設定 (ここを書き換えました) ---
 const AUTH_CONFIG = {
@@ -741,6 +741,7 @@ function runBootSequence() {
         "LOADING MEMETIC KILL AGENT PROTECTION...",
         "CONNECTING TO GLOBAL DATABASE...",
         "BYPASSING REGIONAL FIREWALL...",
+        "CHECKING YOUR LICENSE...",
         "AUTHENTICATION SUCCESSFUL.",
         "WELCOME, AUTHORIZED PERSONNEL."
     ];
@@ -754,14 +755,15 @@ function runBootSequence() {
             beep(400 + (i * 100), 20);
         }, i * 400);
     });
-}
-   setTimeout(() => {
-    UI.bootScreen.style.display = 'none';
-    UI.mainTerminal.style.display = 'block';
 
-    document.getElementById('statusbar').textContent =
-        `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
-}, 2800);
+    // ←🔥ここが重要（関数の中！）
+    setTimeout(() => {
+        UI.bootScreen.style.display = 'none';
+        UI.mainTerminal.style.display = 'block';
+        document.getElementById('statusbar').textContent =
+            `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
+    }, 2800);
+}
 
 // --- 検索・表示ロジック ---
 function searchFile() {
