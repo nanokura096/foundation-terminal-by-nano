@@ -463,8 +463,8 @@ const files = [
     'note': '持ち物: ipod mini 第四世代',
     'extraInfo': [
       { 'level': 3, 'label': 'もうひとつの役職', 'value': 'SCP財団サイト-256秘匿部「P-model」総司令官及びSTF Z-4構成員' },
-      { 'level': 4, 'label': 'Nothing', 'value': 'Nothing' },
-      { 'level': 5, 'label': 'The thousand high roller', 'value': '更新者ログ:O5-6:"堕落" 名前:榎本紗絵 肉体年齢:25 精神年齢においては、"捲られたベール[1998年]"世界線においての測定不可能なループ回数によって不明。親族:O5-6 "堕落" 彼女を生んだ、最初の世界線での本当の母親。O5-6は彼女が転生したもの。機動部隊ν-7"下される鉄槌"総司令官"日宮里佳" 天音氏と親戚であり、従妹の関係に当たる。経歴...[省略]' },
+      { 'level': 5, 'label': '経歴', 'value': '経歴:\n"捲られたベール[1998年]"世界線origin:\n1950年:\n戦後間もない頃、日本国栃木県■■市に生まれる。\n1965年:異常現象p-223:obvt,rm;craにより、不老を発現。\n1985年:母が急病により他界。\n1998年:"ワルツの夜"を目撃。この世界線にて、この事件が影響で全世界に異常存在、及び財団の存在が広まる。\n2001年:9月11日、マンハッタンにて大規模次元崩落事件に巻き込まれる。(合衆国の一番長い日)\n通称・マンハッタンクライシス事件の最中、悪魔との戦闘により左腕を欠損。(この作戦行動の際、日宮氏も出動。)\n2017年:東京事変。ビルの雨に巻き込まれ、死亡。\n"捲られたベール[1998年]"世界線ROOP\n1998年:\n"ワルツの夜"を目撃した地点に記憶を保持したまま戻る。\nこの時点で財団の機動部隊へと入ることを目標とする。\n2000年:機動部隊ν-7"下される鉄槌"へと入隊。\n日宮氏と出会い、これ以降彼女を信望することになる。\n2001年:マンハッタン・クライシス発生。\n日宮氏率いるν-7大隊がマンハッタンへ突入、戦闘中に日宮氏が殉職。助けに入った彼女も死亡した。\n\nここから幾無限回、"捲られたベール[1998年]"世界線ROOPを繰り返していくことになる。\n\n"SCP-5000[WHY?]"世界線\n2017年:東京事変の発生しない世界線にて、記憶を引き継いだまま目覚めるもその世界に日宮氏がいないことを確認。が、なおも救うために財団へと入る。\nこの時、天音睦月と改名。\n2018年:\nインシデント:ロックンロール・ランナウェイ(詳細不明)により現実改変能力(肉体再生及び物質生成)を獲得。\nその影響にて姿が変化し、日宮氏に似た容貌となる。\n2019年:SCP-2718を"視た"。\n\n財団内の現実改変者の暴動を危惧した財団上層部が[改変者一斉収容プロトコル]により複数の現実改変者を全て収容。\n彼女もそのうちの一人となり、収容されSCP-8150とナンバリングされる。\n\n同年:PNEUMAプロジェクトの実行、およびその影響により財団による人類絶滅作戦が開始。\n人型アノマリーの終了という名目により、機動部隊[不明]により再生能力を封じられた後に死亡。\n\n\n経過年数:qa*/_541:npa2448/_overflow/_/\n\n\n"現基軸世界"\n\n2024年12月21日:SCP-5600のテスト中、何故か収容違反したSCP-8250と意図しないクロステストが行われ、天音氏が復活。緊急で収容室へと収容された。\n2024年12月24日:収容室から脱走の後、機動部隊アルファ-1により捕獲。この世界にて再会した日宮氏との面会後、機動部隊ν-7に再入隊。第3部隊司令官を任され、ここにて名前を変え"ヴァレンティナ・エヴゲーニャ"として生きてゆく事となる。\n\n2025年3月未明旧サイト-128にて大規模襲撃が発生。その際に日宮氏が殉職。\n\n2025年5月:日本へと単身赴任。SCP-444-jp関連の情報を探ると同時に、新たな武器を作り上げる。\n\n2025年7月:旧サイト-128、及び旧サイト-81M1にて大規模襲撃が発生。この際、日宮氏に勧誘される形で機動部隊STF Z-4"リスターター"へと加入し、一時的に死を偽装。\n\n2025年9月:現場へと復帰。\n2026年1月:作戦行動中に仲間を失い急性PTSDを発症、廃人と化すもその後のケアにより戻る。\nなお、後遺症か何らかの理由で現実改変能力を全て消失した。\n\n2026年4月26日:O5-7による突発的な襲撃により、殉職。' },
+      { 'level': 5, 'label': 'The thousand high roller', 'value': '更新者ログ:O5-6:"堕落" 名前:榎本紗絵 肉体年齢:25 精神年齢においては、"捲られたベール[1998年]"世界線においての測定不可能なループ回数によって不明。親族:O5-6 "堕落" 彼女を生んだ、最初の世界線での本当の母親。O5-6は彼女が転生したもの。機動部隊ν-7"下される鉄槌"総司令官"日宮里佳" 天音氏と親戚であり、従妹の関係に当たる。 },
     ],
   },
   {
@@ -634,13 +634,16 @@ const files = [
 ];
 
 // --- グローバル変数 ---
+// --- グローバル変数 ---
+// --- グローバル変数 ---
 let currentFile = null;
 let audioCtx = null;
+let loginAttempts = 0; // 失敗カウント用
 
-// --- 認証設定 (デモ用) ---
+// --- 認証設定 (ここを書き換えました) ---
 const AUTH_CONFIG = {
-    userId: "ADMIN-256",
-    passKey: "SCP-FOUNDATION"
+    userId: "admin",
+    passKey: "226227"
 };
 
 // --- DOM要素の取得 ---
@@ -661,7 +664,8 @@ const UI = {
     staffListTitle: document.getElementById('staffListTitle'),
     emergencyBtn: document.getElementById('emergencyBtn'),
     emergencyOverlay: document.getElementById('emergencyOverlay'),
-    emergencyMsg: document.getElementById('emergencyMsg')
+    emergencyMsg: document.getElementById('emergencyMsg'),
+    amnesticOverlay: document.getElementById('amnesticOverlay')
 };
 
 // --- サウンドエンジン ---
@@ -694,6 +698,54 @@ function buzzer(t = 900) {
     osc.start(); osc.stop(audioCtx.currentTime + t / 1000);
 }
 
+// --- プロトコル演出 (記憶処理) ---
+function executeAmnesticProtocol() {
+    UI.amnesticOverlay.style.display = 'flex';
+    UI.amnesticOverlay.classList.add('active');
+    
+    // 警告音の連打
+    buzzer(2000);
+    setTimeout(() => buzzer(1500), 1000);
+    setTimeout(() => buzzer(1500), 2500);
+
+    // 5秒後に初期状態へリロード
+    setTimeout(() => {
+        location.reload();
+    }, 5000);
+}
+
+// --- 画面遷移演出 (ブート) ---
+function runBootSequence() {
+    UI.loginScreen.style.display = 'none';
+    UI.bootScreen.style.display = 'block';
+    UI.bootScreen.innerHTML = '';
+
+    const lines = [
+        "INITIALIZING SITE-256 SECURE NETWORK...",
+        "LOADING MEMETIC KILL AGENT PROTECTION...",
+        "CONNECTING TO GLOBAL DATABASE...",
+        "BYPASSING REGIONAL FIREWALL...",
+        "AUTHENTICATION SUCCESSFUL.",
+        "WELCOME, AUTHORIZED PERSONNEL."
+    ];
+
+    lines.forEach((l, i) => {
+        setTimeout(() => {
+            const d = document.createElement('div');
+            d.textContent = `> ${l}`;
+            UI.bootScreen.appendChild(d);
+            UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
+            beep(400 + (i * 100), 20);
+        }, i * 400);
+    });
+
+    setTimeout(() => {
+        UI.bootScreen.style.display = 'none';
+        UI.mainTerminal.style.display = 'block';
+        document.getElementById('statusbar').textContent = `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
+    }, 2800);
+}
+
 // --- 検索・表示ロジック ---
 function searchFile() {
     initAudio();
@@ -709,7 +761,7 @@ function searchFile() {
     }
 
     if (userClearance < parseInt(file.clearance)) {
-        UI.result.innerHTML = '<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL (REQUIRED: LV'+file.clearance+').\nTHIS INCIDENT HAS BEEN REPORTED.</span>';
+        UI.result.innerHTML = `<span style="color:red; font-weight:bold;">[ ACCESS DENIED ]\nINSUFFICIENT CLEARANCE LEVEL (REQUIRED: LV${file.clearance}).\nTHIS INCIDENT HAS BEEN REPORTED.</span>`;
         UI.tabs.style.display = 'none';
         currentFile = null;
         buzzer(1200);
@@ -756,41 +808,9 @@ function showTab(tabName) {
     UI.result.innerHTML = content;
 }
 
-// --- 画面遷移演出 ---
-function runBootSequence() {
-    UI.loginScreen.style.display = 'none';
-    UI.bootScreen.style.display = 'block';
-    UI.bootScreen.innerHTML = ''; // クリア
-
-    const lines = [
-        "INITIALIZING SITE-256 SECURE NETWORK...",
-        "LOADING MEMETIC KILL AGENT PROTECTION...",
-        "CONNECTING TO GLOBAL DATABASE...",
-        "BYPASSING REGIONAL FIREWALL...",
-        "AUTHENTICATION SUCCESSFUL.",
-        "WELCOME, AUTHORIZED PERSONNEL."
-    ];
-
-    lines.forEach((l, i) => {
-        setTimeout(() => {
-            const d = document.createElement('div');
-            d.textContent = `> ${l}`;
-            UI.bootScreen.appendChild(d);
-            UI.bootScreen.scrollTop = UI.bootScreen.scrollHeight;
-            beep(400 + (i * 100), 20);
-        }, i * 400);
-    });
-
-    setTimeout(() => {
-        UI.bootScreen.style.display = 'none';
-        UI.mainTerminal.style.display = 'block';
-        document.getElementById('statusbar').textContent = `CONNECTED: ${UI.usernameInput.value.toUpperCase()} | STATUS: ONLINE`;
-    }, 2800);
-}
-
-// --- 初期化 & イベントリスナー ---
+// --- 初期化 ---
 function init() {
-    // 職員リストの自動生成
+    // リスト生成
     UI.staffList.innerHTML = '';
     files.forEach(f => {
         const div = document.createElement('div');
@@ -803,29 +823,32 @@ function init() {
         UI.staffList.appendChild(div);
     });
 
-    // ログイン処理 (バリデーション付き)
+    // ログイン処理 (バリデーション & カウント)
     UI.loginBtn.onclick = () => {
         initAudio();
         const user = UI.usernameInput.value;
         const pass = UI.passwordInput.value;
 
         if (user === AUTH_CONFIG.userId && pass === AUTH_CONFIG.passKey) {
+            loginAttempts = 0;
             UI.loginError.textContent = "";
             runBootSequence();
         } else {
-            UI.loginError.style.color = "red";
-            UI.loginError.textContent = "INVALID CREDENTIALS. ACCESS ATTEMPT LOGGED.";
-            buzzer(1000);
-            // 失敗時に揺らすなどの演出も可
-            UI.loginBox.classList.add('blink');
-            setTimeout(() => UI.loginBox.classList.remove('blink'), 500);
+            loginAttempts++;
+            if (loginAttempts >= 3) {
+                executeAmnesticProtocol();
+            } else {
+                UI.loginError.style.color = "red";
+                UI.loginError.textContent = `INVALID CREDENTIALS. ATTEMPT ${loginAttempts}/3.`;
+                buzzer(800);
+                document.getElementById('loginBox').classList.add('blink');
+                setTimeout(() => document.getElementById('loginBox').classList.remove('blink'), 500);
+            }
         }
     };
 
-    // 検索ボタン
     UI.searchBtn.onclick = searchFile;
 
-    // タブ切り替え
     document.querySelectorAll('#tabs button').forEach(btn => {
         btn.onclick = () => {
             beep(1200, 20);
@@ -833,14 +856,12 @@ function init() {
         };
     });
 
-    // 職員リスト開閉
     UI.staffListTitle.onclick = () => {
         const isShow = UI.staffList.style.display === 'block';
         UI.staffList.style.display = isShow ? 'none' : 'block';
         UI.staffListTitle.textContent = isShow ? "▼ Show All Registered Personnel" : "▲ Hide Registered Personnel";
     };
 
-    // 緊急事態ボタン
     UI.emergencyBtn.onclick = () => {
         buzzer(2000);
         UI.emergencyOverlay.style.display = 'flex';
