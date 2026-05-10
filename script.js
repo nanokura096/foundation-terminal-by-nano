@@ -483,25 +483,23 @@ const files = [
   },
 
   {
-    id: 'AP-114115',
-    name: '██ 玲奈',
+    id: '115414',
+    name: 'グレイス',
     sex: 'FEMALE',
     age: '██',
-    division: 'None',
-    rank: 'O5専属応急処置者',
-    ability: `人形
-彼女は人形として作られた存在。
-そのため綿で修復可能`,
+    division: '博士',
+    rank: 'サイト-256管理官',
+    ability: `none`,
     status: 'ACTIVE',
-    clearance: `3`, // 数値として定義
+    clearance: `5`, // 数値として定義
     need: `LEVEL-2`,      // 閲覧に必要なレベル
     remark: 'また復帰することとなった。',
-    profile: '一般高校生に紛れている。',
+    profile: '一般的な社畜博士。',
     weapon: 'none',
     SCP: 'none',
     description: 'none',
     record: 'none',
-    note: 'none',
+    note: 'ちなみに昔は「グレイト」だった。',
     extraInfo: []
   },
 
