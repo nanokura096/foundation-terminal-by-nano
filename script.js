@@ -442,8 +442,8 @@ const files = [
   status: 'ACTIVE',
   clearance: '5',
   need: 'LEVEL-5',
-  remark: 'O5-1',
-  profile: `天理秩序機関を統括する管理人兼O5-1。
+  remark: 'O5-0',
+  profile: `天理秩序機関を統括する管理人兼O5-0。
 妹の雪とは対照的に、常に冷静沈着かつ無口。感情の起伏がほとんど見られず、冷徹とも取れる判断を下す。
 一切の異能を持たない「無能力者」でありながら、その知略とカリスマ性のみで数多の能力者・異常存在を管理下に置いている。`,
   weapon: 'なし',
@@ -460,6 +460,120 @@ const files = [
     }
   ],
 },
+
+{
+    id: 'AP-114114',
+    name: '坂口 檸檬',
+    sex: 'FEMALE',
+    age: '██',
+    division: 'O5-1',
+    rank: 'O5-1',
+    ability: '不眠症',
+    status: 'ACTIVE',
+    clearance: `5`, // 数値として定義
+    need: `LEVEL-4`,      // 閲覧に必要なレベル
+    remark: '退職後考え直した結果、O5-1に復帰を決めた。',
+    profile: '睡眠が必要ない少女。頭が良く、論理的思考も可能。だが、それ以外は普通の高校生だ。',
+    weapon: 'none',
+    SCP: 'none',
+    description: 'none',
+    record: 'none',
+    note: 'none',
+    extraInfo: []
+  },
+
+  {
+    id: 'AP-114115',
+    name: '██ 玲奈',
+    sex: 'FEMALE',
+    age: '██',
+    division: 'None',
+    rank: 'O5専属応急処置者',
+    ability: `人形
+彼女は人形として作られた存在。
+そのため綿で修復可能`,
+    status: 'ACTIVE',
+    clearance: `3`, // 数値として定義
+    need: `LEVEL-2`,      // 閲覧に必要なレベル
+    remark: 'また復帰することとなった。',
+    profile: '一般高校生に紛れている。',
+    weapon: 'none',
+    SCP: 'none',
+    description: 'none',
+    record: 'none',
+    note: 'none',
+    extraInfo: []
+  },
+
+  {
+    id: 'AP-115115',
+    name: '██ 梨花',
+    sex: 'FEMALE',
+    age: '██',
+    division: 'None',
+    rank: 'O5専属戦闘員',
+    ability: `雷撃
+電気を操る。自分自身も素早く動き、電気のように痺れる打撃を打つ。`,
+    status: 'ACTIVE',
+    clearance: `3`, // 数値として定義
+    need: `LEVEL-2`,      // 閲覧に必要なレベル
+    remark: 'また復帰することとなった。',
+    profile: '梨緒と特殊戦闘員として戦闘を行うため、財団はその二人で戦闘を行うように派遣時には必ず調整を行う。',
+    weapon: '槍',
+    SCP: 'none',
+    description: 'none',
+    record: 'none',
+    note: 'none',
+    extraInfo: []
+  },
+
+  {
+   id: 'AP-551551',
+   name: '██ 梨緒',
+   sex: 'FEMALE',
+   age: '██',
+   division: 'None',
+   rank: 'O5専属戦闘員',
+   ability: `氷撃
+氷を操る。自分自身は滑るように素早く動き、氷のように冷たい打撃を打つ。`,
+   status: 'ACTIVE',
+   clearance: `3`, // 数値として定義
+   need: `LEVEL-2`,      // 閲覧に必要なレベル
+   remark: 'また復帰することとなった。',
+   profile: '梨花と特殊戦闘員として戦闘を行うため、財団はその二人で戦闘を行うように派遣時には必ず調整を行う。',
+   weapon: '大鎌',
+   SCP: 'none',
+   description: 'none',
+   record: 'none',
+   note: 'none',
+   extraInfo: []
+ },
+
+
+{
+  id: 'AP-665665',
+  name: 'レントラー・レミントン',
+  sex: 'MALE',
+  age: '██',
+  division: 'O5専属スタッフ兼幹部',
+  rank: 'O5-1専属秘書兼戦闘員総括',
+  ability: `身体強化
+純粋な身体強化。能力無効化の影響を受けない。`,
+  status: 'ACTIVE',
+  clearance: `4`, // 数値として定義
+  need: `LEVEL-2`,      // 閲覧に必要なレベル
+  remark: 'また復帰することとなった。',
+  profile: 'O5-1の専属秘書。戦闘はあまり得意でない。',
+  weapon: 'none',
+  SCP: 'none',
+  description: 'none',
+  record: 'none',
+  note: 'none',
+  extraInfo: []
+},
+
+
+
 
   {
     'id': '466620',
